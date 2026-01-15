@@ -258,7 +258,13 @@
                                 
                                 <!-- Image Wrapper -->
                                 <div class="card-image-wrapper">
-                                    <img src="<%= hostel.image ? '/uploads/' + hostel.image : 'https://via.placeholder.com/400x300' %>" 
+                                    <% if(hostel.image) { %>
+                                        <img src="/uploads/<%= hostel.image %>"
+                                    <% } else { %>
+                                        <div class="placeholder-img placeholder-hostel" style="width:100%;height:100%;position:absolute;top:0;left:0;"></div>
+                                    <% } %>
+                                    <% if(hostel.image) { %>
+                                        <img src="/uploads/<%= hostel.image %>" 
                                          class="premium-card-img">
                                     
                                     <div class="img-overlay"></div>
@@ -266,15 +272,15 @@
 
                                     <div class="floating-actions">
                                         <label class="action-circle" title="Compare">
-                                            <input type="checkbox" class="d-none" onclick="addToCompare(<%= hostel.id %>)">
+                                            <input type="checkbox" class="d-none" onclick="addToCompare('<%= hostel._id %>')">
                                             <i class="bi bi-arrow-left-right"></i>
                                         </label>
-                                        <button class="action-circle" onclick="toggleWishlist(this, <%= hostel.id %>)" title="Save" aria-pressed="false">
+                                        <button class="action-circle" onclick="toggleWishlist(this, '<%= hostel._id %>')" title="Save" aria-pressed="false">
                                             <i class="bi bi-heart"></i>
                                         </button>
                                         <% if (hostel.mess_fee > 0) { %>
                                         <label class="action-circle" title="Include Mess">
-                                            <input type="checkbox" class="d-none" onchange="toggleCardMess(this, <%= hostel.id %>)">
+                                            <input type="checkbox" class="d-none" onchange="toggleCardMess(this, '<%= hostel._id %>')">
                                             <i class="bi bi-egg-fried"></i>
                                         </label>
                                         <% } %>
@@ -300,7 +306,7 @@
 
                                     <hr style="opacity: 0.1; margin: 10px 0;">
 
-                                    <a href="/details/<%= hostel.id %>" class="btn btn-view-details w-100">
+                                    <a href="/details/<%= hostel._id %>" class="btn btn-view-details w-100">
                                         View Details <i class="bi bi-arrow-right-short"></i>
                                     </a>
                                 </div>

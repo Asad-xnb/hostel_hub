@@ -156,10 +156,14 @@
                             
                             <!-- Image Section -->
                             <div class="wish-img-wrapper">
-                                <img src="<%= row.image ? '/uploads/'+row.image : 'https://via.placeholder.com/400' %>" class="wish-img">
+                                <% if(row.image) { %>
+                                    <img src="/uploads/<%= row.image %>" class="wish-img">
+                                <% } else { %>
+                                    <div class="wish-img placeholder-img placeholder-hostel"></div>
+                                <% } %>
                                 
                                 <!-- Remove Button -->
-                                <button class="btn-remove" onclick="toggleWishlist(this, <%= row.id %>)" title="Remove from Wishlist">
+                                <button class="btn-remove" onclick="toggleWishlist(this, '<%= row._id %>')" title="Remove from Wishlist">
                                     <i class="bi bi-trash3-fill"></i>
                                 </button>
 
@@ -180,7 +184,7 @@
 
                                 <hr style="opacity: 0.1;">
 
-                                <a href="/details/<%= row.id %>" class="btn btn-outline-dark w-100 rounded-pill fw-bold">
+                                <a href="/details/<%= row._id %>" class="btn btn-outline-dark w-100 rounded-pill fw-bold">
                                     View Property
                                 </a>
                             </div>

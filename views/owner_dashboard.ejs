@@ -95,7 +95,7 @@
                     <select name="hostel_id" class="form-select form-select-sm">
                         <option value="">All Properties</option>
                         <% my_hostels.forEach(h => { %>
-                            <option value="<%= h.id %>" <%= query.hostel_id == h.id ? 'selected' : '' %>><%= h.name %></option>
+                            <option value="<%= h._id %>" <%= query.hostel_id == h._id ? 'selected' : '' %>><%= h.name %></option>
                         <% }) %>
                     </select>
                 </div>
@@ -171,7 +171,7 @@
                                             </a>
                                         </td>
                                         <td>
-                                            <a href="/approve_rent/<%= rent.id %>" class="btn btn-sm btn-success text-white px-3 shadow-sm fw-bold" onclick="return confirm('Confirm payment received?');">
+                                            <a href="/approve_rent/<%= rent._id %>" class="btn btn-sm btn-success text-white px-3 shadow-sm fw-bold" onclick="return confirm('Confirm payment received?');">
                                                 <i class="bi bi-check2-circle me-1"></i> Verify
                                             </a>
                                         </td>
@@ -311,11 +311,11 @@
         <% if (my_hostels.length > 0) { %>
             <div class="row g-3 mb-5">
                 <% my_hostels.forEach(h => { 
-                    let img = h.image ? '/uploads/'+h.image : 'https://via.placeholder.com/100';
+                    let img = h.image ? '/uploads/'+h.image : 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect fill="%23667eea" width="100" height="100"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-size="40" fill="white" opacity="0.5"%3E📷%3C/text%3E%3C/svg%3E';
                 %>
                 <div class="col-md-4 col-lg-3">
                     <div class="card border-0 shadow-sm h-100 position-relative">
-                        <a href="/delete_hostel/<%= h.id %>" 
+                        <a href="/delete_hostel/<%= h._id %>" 
                            class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 rounded-circle shadow" 
                            style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; z-index: 10; padding: 0; line-height: 1;"
                            onclick="return confirm('⚠️ Are you sure? \n\nThis will delete the Hostel, all Rooms, and all Bookings associated with it. This action cannot be undone.');"
@@ -330,11 +330,11 @@
                             </div>
                         </div>
                         <div class="card-footer bg-white border-0 pt-0">
-                            <a href="/add_room/<%= h.id %>" class="btn btn-sm btn-outline-info w-100 mb-2"><i class="bi bi-door-open"></i> Manage Rooms</a>
-                            <a href="/edit_hostel/<%= h.id %>" class="btn btn-sm btn-outline-dark w-100 mb-2">Edit Details</a>
+                            <a href="/add_room/<%= h._id %>" class="btn btn-sm btn-outline-info w-100 mb-2"><i class="bi bi-door-open"></i> Manage Rooms</a>
+                            <a href="/edit_hostel/<%= h._id %>" class="btn btn-sm btn-outline-dark w-100 mb-2">Edit Details</a>
                             <div class="d-flex gap-2">
-                                <a href="/manage_mess/<%= h.id %>" class="btn btn-sm btn-light border flex-fill text-muted"><i class="bi bi-egg-fried"></i> Menu</a>
-                                <a href="/manage_hostel/<%= h.id %>" class="btn btn-sm btn-light border flex-fill text-danger"><i class="bi bi-megaphone"></i> Alert</a>
+                                <a href="/manage_mess/<%= h._id %>" class="btn btn-sm btn-light border flex-fill text-muted"><i class="bi bi-egg-fried"></i> Menu</a>
+                                <a href="/manage_hostel/<%= h._id %>" class="btn btn-sm btn-light border flex-fill text-danger"><i class="bi bi-megaphone"></i> Alert</a>
                             </div>
                         </div>
                     </div>

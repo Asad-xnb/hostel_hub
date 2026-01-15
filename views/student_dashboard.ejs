@@ -142,7 +142,7 @@
                                             <td data-label="Action">
                                                 <% if(pay.status == 'Pending') { %>
                                                     <!-- Pay Button -->
-                                                    <button class="btn btn-sm btn-gold shadow-sm" onclick="openPayModal('<%= pay.id %>', '<%= pay.month_year %>')">
+                                                    <button class="btn btn-sm btn-gold shadow-sm" onclick="openPayModal('<%= pay._id %>', '<%= pay.month_year %>')">
                                                         <i class="bi bi-upload"></i> <span class="d-none d-sm-inline">Upload Proof</span>
                                                     </button>
                                                 <% } else { %>
@@ -259,7 +259,13 @@
                         <div class="card border-0 shadow-sm rounded-3 mb-4">
                             <div class="card-body p-4 d-flex align-items-center">
                                 <div class="position-relative me-4">
-                                    <img src="<%= user.profile_pic ? '/uploads/'+user.profile_pic : 'https://via.placeholder.com/150' %>" 
+                                    <% if(user.profile_pic) { %>
+                                        <img src="/uploads/<%= user.profile_pic %>"
+                                    <% } else { %>
+                                        <div class="placeholder-img placeholder-avatar" style="width:150px;height:150px;"></div>
+                                    <% } %>
+                                    <% if(user.profile_pic) { %>
+                                        <img src="/uploads/<%= user.profile_pic %>" 
                                          class="rounded-3 shadow-sm" style="width: 100px; height: 100px; object-fit: cover; border: 3px solid #fff;">
                                     <button type="button" class="btn btn-gold btn-sm position-absolute bottom-0 end-0 rounded-circle p-2 border-white border-2" onclick="document.getElementById('picInput').click()">
                                         <i class="bi bi-pencil-fill text-white" style="font-size: 10px;"></i>
@@ -387,7 +393,7 @@
                                                 </td>
                                                 <td>
                                                     <% if(booking.status == 'Pending' || booking.status == 'Rejected') { %>
-                                                        <a href="/cancel_booking/<%= booking.id %>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to cancel this request?');">
+                                                        <a href="/cancel_booking/<%= booking._id %>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to cancel this request?');">
                                                             <i class="bi bi-trash"></i> Cancel
                                                         </a>
                                                     <% } else { %>
@@ -436,7 +442,7 @@
                                                 <img src="/uploads/<%= item.image || 'default.jpg' %>" class="card-img-top" style="height: 150px; object-fit: cover;">
                                                 <div class="card-body">
                                                     <h6 class="fw-bold"><%= item.name %></h6>
-                                                    <a href="/details/<%= item.id %>" class="btn btn-sm btn-outline-dark w-100 mt-2">View</a>
+                                                    <a href="/details/<%= item._id %>" class="btn btn-sm btn-outline-dark w-100 mt-2">View</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -593,7 +599,7 @@
             <div class="modal-body">
                 <p class="small text-muted">Please upload your transaction screenshot.</p>
                 <% if(bookings && bookings.length > 0) { %>
-                    <input type="hidden" name="booking_id" value="<%= bookings[0].id %>">
+                    <input type="hidden" name="booking_id" value="<%= bookings[0]._id %>">
                 <% } %>
                 <input type="file" name="proof" class="form-control" required>
             </div>

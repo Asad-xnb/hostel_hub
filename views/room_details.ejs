@@ -44,7 +44,7 @@
                                 <% }) %>
                             <% } else { %>
                                 <div class="carousel-item active h-100">
-                                    <img src="https://via.placeholder.com/600x400?text=No+Room+Image" class="d-block w-100 h-100" style="object-fit: cover; min-height: 400px;">
+                                    <div class="d-block w-100 h-100 placeholder-img placeholder-room" style="min-height: 400px;"></div>
                                 </div>
                             <% } %>
                         </div>
@@ -125,7 +125,7 @@
                         <!-- Action Button (Booking Logic Integrated) -->
                         <% if (user && user.role === 'student') { %>
                             <form action="/book_seat" method="POST">
-                                <input type="hidden" name="room_id" value="<%= room.id %>">
+                                <input type="hidden" name="room_id" value="<%= room._id %>">
                                 <!-- Hidden input to store mess selection -->
                                 <input type="hidden" name="with_mess" id="formRoomMessInput">
                                 

@@ -85,7 +85,11 @@
         <!-- Hostel 1 -->
         <div class="col-md-5 col-5">
             <div class="vs-card">
-                <img src="<%= h1.image ? '/uploads/'+h1.image : 'https://via.placeholder.com/300' %>" class="vs-img">
+                <% if(h1.image) { %>
+                    <img src="/uploads/<%= h1.image %>" class="vs-img">
+                <% } else { %>
+                    <div class="vs-img placeholder-img placeholder-hostel"></div>
+                <% } %>
                 <h4 class="fw-bold mt-3 mb-0" style="font-family: 'Cinzel';"><%= h1.name %></h4>
                 <p class="text-muted small"><%= h1.area %></p>
                 <h5 class="text-success fw-bold">Rs. <%= h1.price.toLocaleString() %></h5>
@@ -98,7 +102,11 @@
         <!-- Hostel 2 -->
         <div class="col-md-5 col-5">
             <div class="vs-card">
-                <img src="<%= h2.image ? '/uploads/'+h2.image : 'https://via.placeholder.com/300' %>" class="vs-img">
+                <% if(h2.image) { %>
+                    <img src="/uploads/<%= h2.image %>" class="vs-img">
+                <% } else { %>
+                    <div class="vs-img placeholder-img placeholder-hostel"></div>
+                <% } %>
                 <h4 class="fw-bold mt-3 mb-0" style="font-family: 'Cinzel';"><%= h2.name %></h4>
                 <p class="text-muted small"><%= h2.area %></p>
                 <h5 class="text-success fw-bold">Rs. <%= h2.price.toLocaleString() %></h5>

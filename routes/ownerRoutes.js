@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const ownerController = require('../controllers/ownerController');
+const messController = require('../controllers/messController');
 const { requireOwner } = require('../middleware/auth');
 const { uploadMultiple } = require('../middleware/upload');
 
@@ -12,6 +13,14 @@ router.get('/resolve_complaint/:id', requireOwner, ownerController.resolveCompla
 // Room management
 router.get('/add_room/:hostel_id', requireOwner, ownerController.showAddRoom);
 router.post('/add_room/:hostel_id', requireOwner, uploadMultiple('room_images', 3), ownerController.addRoom);
+
+// Hostel announcement management
+router.get('/manage_hostel/:id', requireOwner, messController.showManageHostel);
+router.post('/manage_hostel', requireOwner, messController.updateAnnouncement);
+
+// Mess menu management
+router.get('/manage_mess/:id', requireOwner, messController.showManageMess);
+router.post('/manage_mess', requireOwner, messController.updateMessMenu);
 
 // Payment settings
 router.get('/payment_settings', requireOwner, ownerController.showPaymentSettings);

@@ -116,7 +116,7 @@
                                         </td>
                                         <td>
                                             <% if(comp.status === 'Pending') { %>
-                                                <a href="/resolve_complaint/<%= comp.id %>" class="btn btn-sm btn-outline-success" onclick="return confirm('Mark this issue as resolved?')">
+                                                <a href="/resolve_complaint/<%= comp._id %>" class="btn btn-sm btn-outline-success" onclick="return confirm('Mark this issue as resolved?')">
                                                     <i class="bi bi-check-lg"></i> Resolve
                                                 </a>
                                             <% } else { %>
@@ -160,7 +160,7 @@
 
                         <div class="complaint-card-action">
                             <% if(comp.status === 'Pending') { %>
-                                <a href="/resolve_complaint/<%= comp.id %>" class="btn btn-outline-success" onclick="return confirm('Mark this issue as resolved?')">
+                                <a href="/resolve_complaint/<%= comp._id %>" class="btn btn-outline-success" onclick="return confirm('Mark this issue as resolved?')">
                                     <i class="bi bi-check-lg"></i> Resolve
                                 </a>
                             <% } else { %>

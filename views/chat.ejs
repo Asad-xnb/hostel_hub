@@ -71,7 +71,11 @@
     <div class="wa-header">
         <a href="/chat_list" class="wa-back-btn"><i class="bi bi-arrow-left"></i></a>
         
-        <img src="<%= receiver.profile_pic ? '/uploads/'+receiver.profile_pic : 'https://via.placeholder.com/50' %>">
+        <% if(receiver.profile_pic) { %>
+            <img src="/uploads/<%= receiver.profile_pic %>">
+        <% } else { %>
+            <div class="placeholder-img placeholder-avatar" style="width:50px;height:50px;border-radius:50%;"></div>
+        <% } %>
         
         <div>
             <h6 class="m-0 text-dark fw-bold"><%= receiver.name %></h6>

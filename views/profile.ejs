@@ -184,7 +184,11 @@ textarea { min-height:84px; resize:vertical; }
         <!-- USER CARD -->
         <div class="user-card">
           <div class="avatar-wrap">
-            <img id="avatarPreview" class="avatar" src="<%= user.profile_pic ? '/uploads/'+user.profile_pic : 'https://via.placeholder.com/300x300?text=Avatar' %>" alt="avatar">
+            <% if(user.profile_pic) { %>
+                <img id="avatarPreview" class="avatar" src="/uploads/<%= user.profile_pic %>" alt="avatar">
+            <% } else { %>
+                <div id="avatarPreview" class="avatar placeholder-img placeholder-avatar"></div>
+            <% } %>
             <label for="picInput" class="avatar-edit" title="Change photo">
               <i class="bi bi-pencil-fill"></i>
             </label>

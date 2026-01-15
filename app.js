@@ -16,6 +16,7 @@ app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
+
 // --- BODY PARSER ---
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -60,9 +61,9 @@ app.use('/', chatRoutes);
 app.use('/', communityRoutes);
 app.use('/', pageRoutes);
 
-// --- ERROR HANDLERS ---
-app.use(errorHandler);
+// --- ERROR HANDLERS (must be last) ---
 app.use(notFound);
+app.use(errorHandler);
 
 // --- START SERVER ---
 const PORT = process.env.PORT || 3000;
@@ -70,5 +71,7 @@ app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
     console.log(`📦 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
+
+module.exports = app;
 
 module.exports = app;

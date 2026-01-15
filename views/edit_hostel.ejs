@@ -4,7 +4,7 @@
     <div class="container" style="max-width: 900px;">
         <h2 class="fw-bold mb-4" style="font-family: 'Cinzel';">Edit Hostel</h2>
         
-        <form action="/edit_hostel/<%= hostel.id %>" method="POST" enctype="multipart/form-data" class="card p-5 shadow-sm border-0">
+        <form action="/edit_hostel/<%= hostel._id %>" method="POST" enctype="multipart/form-data" class="card p-5 shadow-sm border-0">
             <div class="mb-3">
                 <label class="fw-bold">Name</label>
                 <input type="text" name="name" class="form-control" value="<%= hostel.name %>" required>
@@ -34,7 +34,7 @@
                 <label class="fw-bold mb-2">Facilities:</label><br>
                 <div class="btn-group flex-wrap gap-2">
                     <% 
-                        const myFacs = hostel.facilities ? hostel.facilities.split(',') : [];
+                        const myFacs = Array.isArray(hostel.facilities) ? hostel.facilities : (hostel.facilities ? hostel.facilities.split(',') : []);
                         const allFacs = ['WiFi', 'Mess', 'Laundry', 'Generator', 'CCTV', 'Parking'];
                     %>
                     <% allFacs.forEach(f => { %>
@@ -52,9 +52,9 @@
                 <div class="d-flex flex-wrap gap-2 mb-3">
                     <% images.forEach(function(img) { %>
                         <div class="position-relative">
-                            <img src="/uploads/<%= img.image_path %>" style="width:80px;height:80px;object-fit:cover;" class="rounded">
+                            <img src="/uploads/<%= typeof img === 'string' ? img : img.image_path %>" style="width:80px;height:80px;object-fit:cover;" class="rounded">
                             <!-- UPDATED DELETE BUTTON -->
-<a href="/delete_image/<%= img.id %>?hostel_id=<%= hostel.id %>" 
+<a href="/delete_image/<%= typeof img === 'string' ? img : img._id %>?hostel_id=<%= hostel._id %>" 
    class="btn btn-danger btn-sm position-absolute top-0 end-0 py-0 px-1" 
    onclick="return confirm('Delete this photo?')">×</a>
                         </div>
