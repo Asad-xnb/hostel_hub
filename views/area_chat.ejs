@@ -209,7 +209,7 @@
 <!-- JS Logic -->
 <script>
     const areaName = "<%= area %>";
-    const myId = <%= user ? user.id : 'null' %>;
+    const myId = <%= user ? "'" + user.id + "'" : 'null' %>;
     const myName = "<%= user ? user.name.replace(/"/g, '\\"') : '' %>";
     const isGuest = (myId === null);
     const chatBox = document.getElementById('chatBox');
@@ -247,7 +247,7 @@
                 data.forEach(msg => {
                     // For guests: isGuest=true and sender_id=3 means it's their message
                     // For logged-in users: compare sender_id with their user.id
-                    const isMe = isGuest ? (msg.sender_id === 3) : (msg.sender_id === myId);
+                    const isMe = isGuest ? (msg.sender_id === 3) : (msg.sender_id == myId);
                     
                     // Format Time (e.g., 12:45 PM)
                     const date = new Date(msg.created_at);

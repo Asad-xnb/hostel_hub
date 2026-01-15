@@ -97,8 +97,8 @@
 </div>
 
 <script>
-    const myId = <%= user.id %>;
-    const receiverId = <%= receiver.id %>;
+    const myId = '<%= user.id %>';
+    const receiverId = '<%= receiver._id %>';
     const chatBox = document.getElementById('chatBox');
 
     function loadMessages() {
@@ -111,7 +111,7 @@
         .then(data => {
             let html = "";
             data.forEach(msg => {
-                const cls = (msg.sender_id === myId) ? 'sent' : 'received';
+                const cls = (msg.sender.toString() == myId) ? 'sent' : 'received';
                 html += `<div class="msg ${cls}">${msg.message}</div>`;
             });
             

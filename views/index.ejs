@@ -259,13 +259,10 @@
                                 <!-- Image Wrapper -->
                                 <div class="card-image-wrapper">
                                     <% if(hostel.image) { %>
-                                        <img src="/uploads/<%= hostel.image %>"
+                                        <img src="/uploads/<%= hostel.image %>" class="premium-card-img">
                                     <% } else { %>
                                         <div class="placeholder-img placeholder-hostel" style="width:100%;height:100%;position:absolute;top:0;left:0;"></div>
                                     <% } %>
-                                    <% if(hostel.image) { %>
-                                        <img src="/uploads/<%= hostel.image %>" 
-                                         class="premium-card-img">
                                     
                                     <div class="img-overlay"></div>
                                     <span class="category-badge"><%= hostel.category %></span>

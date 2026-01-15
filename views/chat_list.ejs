@@ -121,13 +121,10 @@
                 <% chats.forEach(chat => { %>
                     <a href="/chat/<%= chat.id %>" class="chat-item text-decoration-none">
                         <% if(chat.profile_pic) { %>
-                            <img src="/uploads/<%= chat.profile_pic %>"
+                            <img src="/uploads/<%= chat.profile_pic %>" class="chat-avatar" alt="<%= chat.name %>">
                         <% } else { %>
                             <div class="placeholder-img placeholder-avatar" style="width:50px;height:50px;"></div>
                         <% } %>
-                        <% if(chat.profile_pic) { %> 
-                             class="chat-avatar"
-                             alt="<%= chat.name %>">
                         <div class="chat-info">
                             <div class="chat-header">
                                 <h6 class="chat-name"><%= chat.name %></h6>

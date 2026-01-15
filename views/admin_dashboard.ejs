@@ -44,7 +44,7 @@
                                 </td>
                                 <td>
                                     <% if(!h.is_verified) { %>
-                                        <a href="/admin/verify_hostel/<%= h.id %>" class="btn btn-sm btn-primary">Verify</a>
+                                        <a href="/admin/verify_hostel/<%= h._id %>" class="btn btn-sm btn-primary">Verify</a>
                                     <% } else { %>
                                         <i class="bi bi-check-circle-fill text-success"></i>
                                     <% } %>
@@ -71,7 +71,7 @@
                                 <td><%= u.email %></td>
                                 <td><span class="badge bg-secondary"><%= u.role %></span></td>
                                 <td>
-                                    <a href="/admin/delete_user/<%= u.id %>" class="btn btn-sm btn-danger" onclick="return confirm('Delete this user?');">Delete</a>
+                                    <a href="/admin/delete_user/<%= u._id %>" class="btn btn-sm btn-danger" onclick="return confirm('Delete this user?');">Delete</a>
                                 </td>
                             </tr>
                         <% }); %>
