@@ -89,7 +89,8 @@ exports.getStudentDashboard = async (req, res) => {
             wishlist: wishlist.map(w => w.hostel),
             payments,
             stay: stayRecord,
-            activeBooking
+            activeBooking,
+            msg: req.query.msg
         });
     } catch (error) {
         console.error('Student Dashboard Error:', error);

@@ -32,7 +32,7 @@ exports.bookHostel = async (req, res) => {
             final_rent: finalRent
         });
 
-        res.redirect('/student_dashboard');
+        res.redirect('/student_dashboard?msg=booking_requested');
     } catch (error) {
         console.error('Book Hostel Error:', error);
         res.status(500).send('Error booking hostel');

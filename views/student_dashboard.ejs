@@ -43,6 +43,23 @@
 <div class="content-wrapper">
     <div class="container-fluid mb-5" style="padding-top: 20px;">
 
+        <!-- Success Messages -->
+        <% if (typeof msg !== 'undefined') { %>
+            <% if (msg === 'booking_requested') { %>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    <strong>Booking request sent!</strong> Your booking is pending approval from the hostel owner.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <% } else if (msg === 'seat_booked_successfully') { %>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    <strong>Room seat booked!</strong> Your booking request has been submitted successfully.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <% } %>
+        <% } %>
+
         <!-- 1. HEADER -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
@@ -260,13 +277,10 @@
                             <div class="card-body p-4 d-flex align-items-center">
                                 <div class="position-relative me-4">
                                     <% if(user.profile_pic) { %>
-                                        <img src="/uploads/<%= user.profile_pic %>"
+                                        <img src="/uploads/<%= user.profile_pic %>" class="rounded-3 shadow-sm" style="width: 100px; height: 100px; object-fit: cover; border: 3px solid #fff;">
                                     <% } else { %>
-                                        <div class="placeholder-img placeholder-avatar" style="width:150px;height:150px;"></div>
+                                        <div class="placeholder-img placeholder-avatar rounded-3 shadow-sm" style="width:100px;height:100px;border:3px solid #fff;"></div>
                                     <% } %>
-                                    <% if(user.profile_pic) { %>
-                                        <img src="/uploads/<%= user.profile_pic %>" 
-                                         class="rounded-3 shadow-sm" style="width: 100px; height: 100px; object-fit: cover; border: 3px solid #fff;">
                                     <button type="button" class="btn btn-gold btn-sm position-absolute bottom-0 end-0 rounded-circle p-2 border-white border-2" onclick="document.getElementById('picInput').click()">
                                         <i class="bi bi-pencil-fill text-white" style="font-size: 10px;"></i>
                                     </button>
@@ -384,8 +398,8 @@
                                         <tbody>
                                             <% bookings.forEach(booking => { %>
                                             <tr>
-                                                <td class="fw-bold"><%= booking.hostel_name %></td>
-                                                <td><%= new Date(booking.created_at).toLocaleDateString() %></td>
+                                                <td class="fw-bold"><%= booking.hostel.name %></td>
+                                                <td><%= new Date(booking.createdAt).toLocaleDateString() %></td>
                                                 <td>
                                                     <span class="badge rounded-pill bg-<%= booking.status == 'Approved' ? 'success' : (booking.status == 'Pending' ? 'warning' : 'danger') %>">
                                                         <%= booking.status %>
