@@ -33,6 +33,17 @@
 <div class="content-wrapper">
     <div class="container-fluid" style="min-height: 80vh;">
         
+        <!-- Success Messages -->
+        <% if (typeof query !== 'undefined' && query.msg) { %>
+            <% if (query.msg === 'rent_approved') { %>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    <strong>Rent payment verified!</strong> The payment has been marked as paid.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <% } %>
+        <% } %>
+        
         <div class="text-center mb-4">
             <h2 class="fw-bold mb-1" style="font-family: 'Cinzel';">Owner Dashboard</h2>
             <p class="text-muted small mb-3">Manage your business overview</p>
