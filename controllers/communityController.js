@@ -79,10 +79,11 @@ exports.communityAPI = async (req, res) => {
                 }
 
                 return {
-                    ...msg,
                     name: displayName,
                     message: displayMessage,
-                    sender_id: msg.sender ? msg.sender._id : null
+                    sender_id: msg.sender ? msg.sender._id : null,
+                    createdAt: msg.createdAt,
+                    created_at: msg.createdAt // For backward compatibility
                 };
             });
 

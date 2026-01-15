@@ -250,7 +250,7 @@
                     const isMe = isGuest ? (msg.sender_id === 3) : (msg.sender_id == myId);
                     
                     // Format Time (e.g., 12:45 PM)
-                    const date = new Date(msg.created_at);
+                    const date = new Date(msg.createdAt || msg.created_at);
                     const time = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
                     html += `

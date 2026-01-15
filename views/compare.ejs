@@ -147,14 +147,16 @@
 
                 <!-- Facilities Comparison -->
                 <% 
-                    const f1_count = h1.facilities ? h1.facilities.split(',').length : 0;
-                    const f2_count = h2.facilities ? h2.facilities.split(',').length : 0;
+                    const f1_array = Array.isArray(h1.facilities) ? h1.facilities : (h1.facilities ? h1.facilities.split(',') : []);
+                    const f2_array = Array.isArray(h2.facilities) ? h2.facilities : (h2.facilities ? h2.facilities.split(',') : []);
+                    const f1_count = f1_array.length;
+                    const f2_count = f2_array.length;
                 %>
                 <tr>
                     <td class="fw-bold text-muted text-start ps-4">Amenities</td>
                     <td class="<%= f1_count > f2_count ? 'winner-cell' : '' %>">
                         <div class="d-flex flex-wrap justify-content-center gap-1">
-                            <% if(h1.facilities) h1.facilities.split(',').forEach(f => { %>
+                            <% if(f1_count > 0) f1_array.forEach(f => { %>
                                 <span class="badge bg-light text-dark border"><%= f %></span>
                             <% }) %>
                         </div>
@@ -162,7 +164,7 @@
                     </td>
                     <td class="<%= f2_count > f1_count ? 'winner-cell' : '' %>">
                         <div class="d-flex flex-wrap justify-content-center gap-1">
-                            <% if(h2.facilities) h2.facilities.split(',').forEach(f => { %>
+                            <% if(f2_count > 0) f2_array.forEach(f => { %>
                                 <span class="badge bg-light text-dark border"><%= f %></span>
                             <% }) %>
                         </div>

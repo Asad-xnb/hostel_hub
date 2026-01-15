@@ -39,7 +39,7 @@
                             <% if(room.images && room.images.length > 0) { %>
                                 <% room.images.forEach(function(img, i){ %>
                                     <div class="carousel-item h-100 <%= i===0 ? 'active' : '' %>">
-                                        <img src="/uploads/<%= img.image_path %>" class="d-block w-100 h-100" style="object-fit: cover; min-height: 400px;">
+                                        <img src="/uploads/<%= typeof img === 'string' ? img : img.image_path %>" class="d-block w-100 h-100" style="object-fit: cover; min-height: 400px;">
                                     </div>
                                 <% }) %>
                             <% } else { %>
@@ -157,8 +157,9 @@
         <div class="card border-0 shadow-sm p-4">
             <h5 class="fw-bold mb-3"><i class="bi bi-stars text-gold" style="color: #D4AF37;"></i> Hostel-Wide Facilities</h5>
             <div class="d-flex flex-wrap gap-2">
-                <% if(hostel.facilities) { 
-                    hostel.facilities.split(',').forEach(f => { %>
+                <% if(hostel.facilities && hostel.facilities.length > 0) { 
+                    const facilities = Array.isArray(hostel.facilities) ? hostel.facilities : hostel.facilities.split(',');
+                    facilities.forEach(f => { %>
                         <span class="badge bg-light text-dark border p-2 fw-normal">
                             <i class="bi bi-check2-circle text-success me-1"></i> <%= f %>
                         </span>
