@@ -1,0 +1,440 @@
+<%- include('partials/header_sidebar') %>
+
+<style>
+    /* --- HERO SECTION --- */
+    .hero-section {
+        position: relative; height: 85vh; margin-top: -80px;
+        background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1555854877-bab0e564b8d5?q=80&w=1920');
+        background-size: cover; background-position: center; background-attachment: fixed;
+        display: flex; align-items: center; justify-content: center; text-align: center;
+        color: white;
+    }
+    .hero-content { position: relative; z-index: 2; width: 100%; max-width: 900px; }
+    .hero-title { font-family: 'Cinzel', serif; font-size: 4.5rem; font-weight: 700; text-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: fadeInUp 1s ease-out; }
+    .hero-subtitle { font-family: 'Poppins', sans-serif; font-size: 1.2rem; letter-spacing: 1px; opacity: 0.9; margin-bottom: 40px; animation: fadeInUp 1.2s ease-out; }
+
+    /* GLASS SEARCH BAR */
+    .glass-search {
+        background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 50px;
+        padding: 10px 15px; display: flex; gap: 8px; box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        animation: fadeInUp 1.4s ease-out; max-width: 480px; width: 100%; margin: 0 auto;
+    }
+    .glass-input {
+        background: transparent; border: none; color: white; padding: 8px 15px; width: 100%;
+        font-size: 0.9rem; outline: none;
+    }
+    .glass-input::placeholder { color: rgba(255,255,255,0.7); }
+    .btn-hero {
+        background: #D4AF37; color: #1a1a1a; border-radius: 50px; padding: 8px 28px;
+        font-weight: bold; border: none; transition: 0.3s; font-size: 0.85rem; white-space: nowrap; flex-shrink: 0;
+    }
+    .btn-hero:hover { background: #fff; color: #D4AF37; transform: scale(1.05); }
+
+    /* --- STATS BAR --- */
+    .stats-bar {
+        background: #1a1a1a; color: #D4AF37; padding: 25px 20px; margin-top: -5px;
+        text-align: center; display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 50px;
+    }
+    .stat-box { min-width: 100px; flex-shrink: 0; }
+    .stat-box h2 { font-family: 'Cinzel'; font-size: 1.6rem; margin: 0; font-weight: 700; }
+    .stat-box p { font-size: 0.65rem; letter-spacing: 1px; color: rgba(255,255,255,0.6); margin-top: 3px; }
+
+    /* --- FILTERS SIDEBAR --- */
+    .filter-card {
+        background: white; border-radius: 20px; padding: 30px; border: none;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05); position: sticky; top: 100px;
+    }
+    .form-label { font-weight: 600; font-size: 13px; text-transform: uppercase; color: #888; letter-spacing: 1px; }
+    .form-control, .form-select { border-radius: 10px; padding: 12px; border: 1px solid #eee; background: #f9f9f9; }
+    .form-control:focus, .form-select:focus { border-color: #D4AF37; box-shadow: none; background: white; }
+
+    /* --- PREMIUM CARD STYLES --- */
+    .premium-card {
+        border: none; border-radius: 16px; background: #fff;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        overflow: hidden; position: relative;
+    }
+    .premium-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(212, 175, 55, 0.15); }
+
+    .card-image-wrapper { position: relative; height: 220px; overflow: hidden; }
+    .premium-card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+    .premium-card:hover .premium-card-img { transform: scale(1.1); }
+    .img-overlay { position: absolute; bottom: 0; left: 0; width: 100%; height: 40%; background: linear-gradient(to top, rgba(0,0,0,0.4), transparent); pointer-events: none; }
+
+    .category-badge {
+        position: absolute; top: 15px; left: 15px; background: rgba(255, 255, 255, 0.95);
+        color: #1a1a1a; padding: 5px 12px; border-radius: 30px; font-size: 0.75rem; font-weight: 700;
+        text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .price-tag {
+        position: absolute; bottom: 15px; right: 15px; background: #D4AF37; color: #fff;
+        padding: 6px 15px; border-radius: 8px; font-weight: 700; font-family: 'Poppins', sans-serif;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    .price-tag small { font-size: 0.7em; opacity: 0.9; margin-right: 3px; }
+
+    .floating-actions { position: absolute; top: 15px; right: 15px; display: flex; gap: 8px; }
+    .action-circle {
+        width: 35px; height: 35px; background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(4px);
+        border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;
+        border: 1px solid rgba(255,255,255,0.5); color: white; transition: 0.3s;
+    }
+    .action-circle:hover { background: white; color: #D4AF37; transform: scale(1.1); }
+    .action-circle input:checked + i { color: #D4AF37; font-weight: bold; }
+
+    .btn-view-details {
+        background: transparent; border: 1px solid #eee; color: #555; border-radius: 50px;
+        font-size: 0.9rem; font-weight: 600; padding: 8px 0; transition: 0.3s;
+    }
+    .btn-view-details:hover { background: #1a1a1a; color: #D4AF37; border-color: #1a1a1a; }
+
+    /* PAGINATION STYLES */
+    .pagination .page-link {
+        color: #1a1a1a; border: none; margin: 0 5px; border-radius: 50%;
+        width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
+        font-weight: bold; transition: 0.3s;
+    }
+    .pagination .page-link:hover, .pagination .page-item.active .page-link {
+        background-color: #D4AF37; color: white; box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+    }
+    .pagination .page-item.disabled .page-link { opacity: 0.5; background: transparent; }
+
+    /* Floating Compare Button */
+    #compareBtn {
+        position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
+        z-index: 9999; transition: 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        opacity: 0; pointer-events: none;
+    }
+    #compareBtn.show { transform: translateX(-50%) translateY(0); opacity: 1; pointer-events: all; }
+
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 1199.98px) {
+        .hero-title { font-size: 3.5rem; }
+        .glass-search { flex-wrap: wrap; }
+        .stat-box h2 { font-size: 1.6rem; }
+    }
+
+    @media (max-width: 991.98px) {
+        .hero-section { height: 70vh; }
+        .hero-title { font-size: 2.8rem; }
+        .hero-subtitle { font-size: 1rem; }
+        .stats-bar { padding: 20px 15px; gap: 40px; }
+        .stat-box h2 { font-size: 1.5rem; }
+        .stat-box p { font-size: 0.65rem; }
+        .filter-card { position: static; margin-bottom: 20px; }
+    }
+
+    @media (max-width: 767.98px) {
+        .hero-section { height: 60vh; }
+        .hero-title { font-size: 2rem; }
+        .hero-subtitle { font-size: 0.9rem; margin-bottom: 25px; }
+        .glass-search { display: flex; flex-direction: column; padding: 8px; border-radius: 15px; gap: 0; align-items: stretch; max-width: 100%; }
+        .glass-input { padding: 12px 15px; font-size: 1rem; width: 100%; }
+        .btn-hero { width: 100%; padding: 12px 20px; margin-top: 8px; }
+        .stats-bar { display: flex; flex-direction: column; gap: 15px; padding: 25px 15px; justify-content: center; }
+        .stat-box { min-width: unset; }
+        .stat-box h2 { font-size: 1.5rem; }
+        .stat-box p { font-size: 0.7rem; }
+        .filter-card { padding: 20px; }
+        .card-image-wrapper { height: 200px; }
+        .category-badge { padding: 4px 10px; font-size: 0.65rem; }
+        .price-tag { padding: 5px 12px; font-size: 0.9rem; }
+        .action-circle { width: 32px; height: 32px; font-size: 0.9rem; }
+        .pagination .page-link { width: 36px; height: 36px; font-size: 0.85rem; }
+    }
+
+    @media (max-width: 575.98px) {
+        .hero-title { font-size: 1.5rem; line-height: 1.2; }
+        .hero-subtitle { font-size: 0.8rem; margin-bottom: 20px; }
+        .glass-search { gap: 0; padding: 8px 10px; display: flex; flex-direction: column; align-items: stretch; border: none; max-width: 100%; }
+        .glass-input { padding: 10px 12px; font-size: 0.85rem; width: 100%; border: none; background: rgba(255,255,255,0.15); }
+        .glass-input::placeholder { color: rgba(255,255,255,0.7); }
+        .glass-search i { display: none; }
+        .glass-search .btn-hero { width: 100%; margin-top: 8px; border-radius: 8px; padding: 10px; font-size: 0.8rem; }
+        .stat-box h2 { font-size: 1.4rem; }
+        .stat-box p { font-size: 0.6rem; }
+        .btn-hero { padding: 10px 16px; font-size: 0.9rem; }
+        .stats-bar { gap: 15px; padding: 20px 10px; }
+        .stat-box h2 { font-size: 1.5rem; }
+        .stat-box p { font-size: 0.7rem; }
+        .filter-card { padding: 16px; border-radius: 15px; }
+        .form-label { font-size: 11px; }
+        .form-control, .form-select { padding: 10px; font-size: 14px; }
+        .premium-card { border-radius: 12px; }
+        .card-image-wrapper { height: 180px; }
+        .category-badge { padding: 3px 8px; font-size: 0.6rem; top: 10px; left: 10px; }
+        .price-tag { padding: 4px 10px; font-size: 0.8rem; bottom: 10px; right: 10px; }
+        .action-circle { width: 30px; height: 30px; font-size: 0.8rem; }
+        .btn-view-details { padding: 6px 0; font-size: 0.85rem; }
+        .pagination .page-link { width: 32px; height: 32px; font-size: 0.75rem; margin: 0 3px; }
+    }
+</style>
+
+<!-- HERO SECTION -->
+<div class="hero-section">
+    <div class="hero-content">
+        <h1 class="hero-title">Find Your <span style="color: #D4AF37;">Sanctuary</span></h1>
+        <p class="hero-subtitle">Discover premium student living with security, comfort, and community.</p>
+        
+        <form action="/" method="GET" class="glass-search">
+            <i class="bi bi-search text-white align-self-center ms-3 fs-5"></i>
+            <input type="text" name="area" class="glass-input" placeholder="Search by Area (e.g. D-Ground, Kohinoor)..." value="<%= query.area %>">
+            <button class="btn-hero">SEARCH</button>
+        </form>
+    </div>
+</div>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+    <div class="stat-box"><h2>150+</h2><p>Verified Hostels</p></div>
+    <div class="stat-box"><h2>5k+</h2><p>Happy Students</p></div>
+    <div class="stat-box"><h2>50+</h2><p>Prime Locations</p></div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="content-wrapper container my-5">
+    <div class="row">
+        
+        <!-- LEFT: FILTER SIDEBAR -->
+        <div class="col-12 col-lg-3 mb-5">
+            <div class="filter-card">
+                <h5 class="fw-bold mb-4 text-dark" style="font-family: 'Cinzel';"><i class="bi bi-sliders2 me-2 text-gold" style="color: #D4AF37;"></i> Refine Search</h5>
+                <form action="/" method="GET">
+                    
+                    <div class="mb-4">
+                        <label class="form-label">Location</label>
+                        <input type="text" name="area" class="form-control" placeholder="e.g. Madina Town" value="<%= query.area %>">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label">Category</label>
+                        <select name="category" class="form-select">
+                            <option value="">All Categories</option>
+                            <option value="Boys" <%= query.category == 'Boys' ? 'selected' : '' %>>Boys Hostel</option>
+                            <option value="Girls" <%= query.category == 'Girls' ? 'selected' : '' %>>Girls Hostel</option>
+                            <option value="Family" <%= query.category == 'Family' ? 'selected' : '' %>>Family Flat</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-5">
+                        <label class="form-label">Max Budget (PKR)</label>
+                        <input type="number" name="price" class="form-control" placeholder="25000" value="<%= query.price %>">
+                    </div>
+
+                    <button class="btn btn-dark w-100 py-3 fw-bold rounded-pill shadow-sm" style="background: #1a1a1a; border: 1px solid #D4AF37;">APPLY FILTERS</button>
+                    <div class="text-center mt-3">
+                        <a href="/" class="text-muted small text-decoration-none">Reset All Filters</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- RIGHT: LISTINGS -->
+        <div class="col-12 col-lg-9">
+            
+            <!-- Section Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h4 class="fw-bold mb-0" style="font-family: 'Cinzel'; color: #1a1a1a; letter-spacing: 1px;">
+                        Featured Residences
+                    </h4>
+                    <div style="height: 3px; width: 50px; background: #D4AF37; margin-top: 5px;"></div>
+                </div>
+                <!-- Showing Page Info -->
+                <small class="text-muted">Page <%= currentPage %> of <%= totalPages %></small>
+            </div>
+            
+            <div class="row g-4">
+                <% if (hostels.length > 0) { %>
+                    <% hostels.forEach(function(hostel) { %>
+                        <div class="col-md-6 col-xl-4">
+                            
+                            <!-- PREMIUM CARD START -->
+                            <div class="card premium-card h-100">
+                                
+                                <!-- Image Wrapper -->
+                                <div class="card-image-wrapper">
+                                    <img src="<%= hostel.image ? '/uploads/' + hostel.image : 'https://via.placeholder.com/400x300' %>" 
+                                         class="premium-card-img">
+                                    
+                                    <div class="img-overlay"></div>
+                                    <span class="category-badge"><%= hostel.category %></span>
+
+                                    <div class="floating-actions">
+                                        <label class="action-circle" title="Compare">
+                                            <input type="checkbox" class="d-none" onclick="addToCompare(<%= hostel.id %>)">
+                                            <i class="bi bi-arrow-left-right"></i>
+                                        </label>
+                                        <button class="action-circle" onclick="toggleWishlist(this, <%= hostel.id %>)" title="Save" aria-pressed="false">
+                                            <i class="bi bi-heart"></i>
+                                        </button>
+                                        <% if (hostel.mess_fee > 0) { %>
+                                        <label class="action-circle" title="Include Mess">
+                                            <input type="checkbox" class="d-none" onchange="toggleCardMess(this, <%= hostel.id %>)">
+                                            <i class="bi bi-egg-fried"></i>
+                                        </label>
+                                        <% } %>
+                                    </div>
+
+                                    <div class="price-tag" data-baseprice="<%= hostel.price %>" data-messfee="<%= hostel.mess_fee || 0 %>"><small>PKR</small> <span class="price-val"><%= hostel.price.toLocaleString() %></span></div>
+                                </div>
+ 
+                                <!-- Card Content -->
+                                <div class="card-body p-3 pt-4">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h5 class="fw-bold mb-0 text-truncate text-dark" style="font-family: 'Cinzel'; font-size: 1.1rem;">
+                                            <%= hostel.name %>
+                                        </h5>
+                                        <% if(hostel.is_verified) { %> 
+                                            <i class="bi bi-patch-check-fill text-primary fs-5" title="Verified Owner" data-bs-toggle="tooltip"></i> 
+                                        <% } %>
+                                    </div>
+
+                                    <p class="text-muted small mb-3 d-flex align-items-center">
+                                        <i class="bi bi-geo-alt-fill me-2" style="color: #D4AF37;"></i> <%= hostel.area %>
+                                    </p>
+
+                                    <hr style="opacity: 0.1; margin: 10px 0;">
+
+                                    <a href="/details/<%= hostel.id %>" class="btn btn-view-details w-100">
+                                        View Details <i class="bi bi-arrow-right-short"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <!-- PREMIUM CARD END -->
+
+                        </div>
+                    <% }); %>
+                <% } else { %>
+                    <div class="col-12 text-center py-5">
+                        <div class="mb-3"><i class="bi bi-search display-1 text-muted opacity-25"></i></div>
+                        <h4 class="text-muted">No hostels found.</h4>
+                        <a href="/" class="btn btn-outline-dark mt-3 rounded-pill px-4">Clear Filters</a>
+                    </div>
+                <% } %>
+            </div>
+
+            <!-- PAGINATION CONTROLS (NEW) -->
+            <% if (totalPages > 1) { %>
+                <nav class="mt-5">
+                    <ul class="pagination justify-content-center">
+                        <!-- Previous -->
+                        <li class="page-item <%= currentPage == 1 ? 'disabled' : '' %>">
+                            <a class="page-link" href="/?page=<%= currentPage - 1 %>&area=<%= query.area || '' %>&category=<%= query.category || '' %>&price=<%= query.price || '' %>">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
+                        </li>
+
+                        <!-- Page Numbers -->
+                        <% for(let i=1; i<=totalPages; i++) { %>
+                            <li class="page-item <%= currentPage == i ? 'active' : '' %>">
+                                <a class="page-link" href="/?page=<%= i %>&area=<%= query.area || '' %>&category=<%= query.category || '' %>&price=<%= query.price || '' %>">
+                                    <%= i %>
+                                </a>
+                            </li>
+                        <% } %>
+
+                        <!-- Next -->
+                        <li class="page-item <%= currentPage == totalPages ? 'disabled' : '' %>">
+                            <a class="page-link" href="/?page=<%= currentPage + 1 %>&area=<%= query.area || '' %>&category=<%= query.category || '' %>&price=<%= query.price || '' %>">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            <% } %>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- FLOATING COMPARE BUTTON -->
+<div id="compareBtn">
+    <button onclick="goToCompare()" class="btn btn-dark shadow-lg rounded-pill px-5 py-3 fw-bold" 
+            style="border: 2px solid #D4AF37; font-family: 'Cinzel'; font-size: 1.1rem;">
+        <i class="bi bi-arrow-left-right me-2" style="color: #D4AF37;"></i> Compare (<span id="count" style="color: #D4AF37;">0</span>/2)
+    </button>
+</div>
+
+<script>
+    // Comparison Logic
+    let selected = [];
+    function addToCompare(id) {
+        if(selected.includes(id)) selected = selected.filter(i => i !== id);
+        else { if(selected.length < 2) selected.push(id); else alert("Select only 2 hostels."); }
+        document.getElementById('count').innerText = selected.length;
+        const btn = document.getElementById('compareBtn');
+        if(selected.length > 0) btn.classList.add('show'); else btn.classList.remove('show');
+    }
+    function goToCompare() {
+        if(selected.length === 2) window.location = `/compare?h1=${selected[0]}&h2=${selected[1]}`;
+        else alert("Select 2 hostels.");
+    }
+
+    // Wishlist Logic
+   
+function toggleWishlist(btn, id) {
+    fetch('/toggle_wishlist', { 
+        method: 'POST', 
+        headers: {'Content-Type': 'application/json'}, 
+        body: JSON.stringify({hostel_id: id}) 
+    })
+    .then(res => res.text()).then(resp => {
+        if (resp === 'login_required') {
+            window.location = '/login';
+            return;
+        }
+
+        // find the icon inside the button and toggle classes
+        const icon = btn.querySelector('i');
+
+        if (resp === 'added') {
+            if (icon) {
+                icon.classList.remove('bi-heart');
+                icon.classList.add('bi-heart-fill');
+            }
+            btn.setAttribute('aria-pressed', 'true');
+            btn.style.color = '#dc3545';
+        } else {
+            if (icon) {
+                icon.classList.remove('bi-heart-fill');
+                icon.classList.add('bi-heart');
+            }
+            btn.setAttribute('aria-pressed', 'false');
+            // remove inline color so stylesheet controls the default appearance
+            btn.style.color = '';
+        }
+    }).catch(err => {
+        console.error('Wishlist error:', err);
+    });
+}
+
+// Card-level mess toggle (updates the price shown on the card)
+function toggleCardMess(checkbox, id) {
+    const card = checkbox.closest('.card');
+    if (!card) return;
+    const priceTag = card.querySelector('.price-tag');
+    if (!priceTag) return;
+    const base = parseFloat(priceTag.getAttribute('data-baseprice')) || 0;
+    const mess = parseFloat(priceTag.getAttribute('data-messfee')) || 0;
+    const priceVal = priceTag.querySelector('.price-val');
+
+    if (checkbox.checked) {
+        const total = base + mess;
+        if (priceVal) priceVal.innerText = total.toLocaleString();
+        priceTag.style.background = '#D4AF37';
+        priceTag.style.color = '#fff';
+    } else {
+        if (priceVal) priceVal.innerText = base.toLocaleString();
+        priceTag.style.background = '';
+        priceTag.style.color = '';
+    }
+}
+</script>
+
+<%- include('partials/footer') %>

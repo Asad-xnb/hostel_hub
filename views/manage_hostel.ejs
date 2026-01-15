@@ -1,0 +1,56 @@
+<%- include('partials/header_sidebar') %>
+
+<div class="content-wrapper">
+    <div class="container" style="max-width: 800px; min-height: 80vh;">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold mb-0" style="font-family: 'Cinzel'; color: #D4AF37;">Manage Announcement</h2>
+                <p class="text-muted small">This message will appear as a popup on your hostel details page.</p>
+            </div>
+            <a href="/owner_dashboard" class="btn btn-outline-dark rounded-pill">Back</a>
+        </div>
+
+        <div class="card border-0 shadow-sm p-5">
+            
+            <!-- Current Status -->
+            <div class="mb-4">
+                <h5 class="fw-bold">Current Status:</h5>
+                <% if (announcement) { %>
+                    <div class="alert alert-warning border-warning d-flex align-items-center">
+                        <i class="bi bi-megaphone-fill fs-3 me-3 text-dark"></i>
+                        <div>
+                            <strong>Live on Website:</strong><br>
+                            "<%= announcement %>"
+                        </div>
+                    </div>
+                <% } else { %>
+                    <div class="alert alert-secondary">
+                        <i class="bi bi-info-circle me-2"></i> No active announcement.
+                    </div>
+                <% } %>
+            </div>
+
+            <hr>
+
+            <!-- Form -->
+            <form action="/manage_hostel" method="POST">
+                <input type="hidden" name="hostel_id" value="<%= hostel_id %>">
+                
+                <div class="mb-4">
+                    <label class="fw-bold mb-2">Write New Announcement</label>
+                    <textarea name="text" class="form-control p-3" rows="5" 
+                              placeholder="e.g. Limited Time Offer: 50% OFF on First Month Rent! Contact now." required><%= announcement || '' %></textarea>
+                    <div class="form-text">Leave empty and save to remove the announcement.</div>
+                </div>
+
+                <button type="submit" class="btn btn-gold w-100 py-3 fw-bold shadow-sm">
+                    <i class="bi bi-check-circle me-2"></i> Publish Update
+                </button>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<%- include('partials/footer') %>

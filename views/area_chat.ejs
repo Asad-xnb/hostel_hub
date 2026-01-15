@@ -1,0 +1,319 @@
+<%- include('partials/header_sidebar') %>
+
+<!-- WhatsApp Style CSS -->
+<style>
+    /* 1. General Layout */
+    body { overflow: hidden; background-color: #d1d7db; } /* Darker background behind the app */
+    
+    .chat-wrapper {
+        height: calc(100vh - 80px); /* Adjust for your top header */
+        display: flex;
+        flex-direction: column;
+        max-width: 100%;
+        margin: 0 auto;
+        position: relative;
+        background-color: #efeae2; /* WhatsApp Base Color */
+        background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); /* WhatsApp Doodle */
+        background-repeat: repeat;
+        opacity: 1;
+    }
+
+    /* 2. Chat Header */
+    .wa-header {
+        background-color: #f0f2f5;
+        padding: 10px 16px;
+        display: flex;
+        align-items: center;
+        border-left: 1px solid #d1d7db;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        z-index: 100;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .wa-avatar {
+        width: 40px; height: 40px; border-radius: 50%; object-fit: cover;
+        margin-right: 15px; cursor: pointer;
+    }
+
+    .wa-header-info h5 { margin: 0; font-size: 16px; color: #111b21; font-weight: 600; }
+    .wa-header-info small { margin: 0; font-size: 13px; color: #667781; }
+    
+    .wa-back-btn { color: #54656f; font-size: 20px; margin-right: 10px; }
+
+    /* 3. Chat Area */
+    #chatBox {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px 5%;
+        display: flex;
+        flex-direction: column;
+        gap: 8px; /* Spacing between messages */
+        padding-bottom: 100px;
+    }
+
+    /* Scrollbar */
+    #chatBox::-webkit-scrollbar { width: 6px; }
+    #chatBox::-webkit-scrollbar-track { background: transparent; }
+    #chatBox::-webkit-scrollbar-thumb { background-color: rgba(0,0,0,0.2); border-radius: 3px; }
+
+    /* 4. Message Bubbles */
+    .msg-container { display: flex; width: 100%; margin-bottom: 2px; }
+    .msg-container.me { justify-content: flex-end; }
+    .msg-container.other { justify-content: flex-start; }
+
+    .msg-bubble {
+        max-width: 65%;
+        padding: 6px 7px 8px 9px;
+        border-radius: 7.5px;
+        font-size: 14.2px;
+        line-height: 19px;
+        position: relative;
+        color: #111b21;
+        box-shadow: 0 1px 0.5px rgba(11,20,26,0.13);
+        word-wrap: break-word;
+    }
+
+    /* Sent Message (Green) */
+    .msg-container.me .msg-bubble {
+        background-color: #d9fdd3;
+        border-top-right-radius: 0; /* Square corner for tail */
+    }
+    /* Tail for Sent */
+    .msg-container.me .msg-bubble::before {
+        content: ""; position: absolute; top: 0; right: -8px;
+        width: 0; height: 0;
+        border-top: 8px solid #d9fdd3;
+        border-right: 8px solid transparent;
+    }
+
+    /* Received Message (White) */
+    .msg-container.other .msg-bubble {
+        background-color: #ffffff;
+        border-top-left-radius: 0;
+    }
+    /* Tail for Received */
+    .msg-container.other .msg-bubble::before {
+        content: ""; position: absolute; top: 0; left: -8px;
+        width: 0; height: 0;
+        border-top: 8px solid #ffffff;
+        border-left: 8px solid transparent;
+    }
+
+    /* Metadata inside bubble */
+    .sender-name {
+        font-size: 12.5px; font-weight: 500; color: #d8522d; /* Random color for name */
+        margin-bottom: 2px; display: block; line-height: 15px;
+    }
+    
+    .msg-meta {
+        float: right; margin-left: 10px; margin-top: 5px;
+        font-size: 11px; color: #667781; display: flex; align-items: center; gap: 3px;
+        position: relative; top: 4px;
+    }
+    
+    /* 5. Input Footer */
+    .wa-footer {
+        background-color: #f0f2f5;
+        padding: 10px 16px;
+        display: flex; align-items: center; gap: 10px;
+        z-index: 100;
+        position: sticky;
+        bottom: 0;
+        box-shadow: 0 -2px 6px rgba(0,0,0,0.05);
+    }
+
+    .wa-input-box {
+        flex: 1;
+        background-color: #ffffff;
+        border-radius: 8px;
+        padding: 9px 12px;
+        display: flex; align-items: center;
+    }
+
+    .wa-input {
+        width: 100%; border: none; outline: none; font-size: 15px;
+    }
+
+    .wa-send-btn {
+        background: transparent; border: none; color: #54656f; font-size: 24px; cursor: pointer; transition: 0.2s;
+        padding: 0;
+        min-width: 36px;
+        min-height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .wa-send-btn:hover { color: #00a884; } /* WhatsApp Green Hover */
+
+    /* Mobile Responsiveness */
+    @media (max-width: 575.98px) {
+        .chat-wrapper { height: calc(100vh - 70px); }
+        .wa-header { padding: 8px 12px; gap: 6px; }
+        .wa-avatar { width: 36px; height: 36px; margin-right: 8px; }
+        .wa-header-info h5 { font-size: 14px; }
+        .wa-header-info small { font-size: 11px; }
+        .wa-back-btn { font-size: 18px; margin-right: 8px; }
+        #chatBox { padding: 15px 3%; padding-bottom: 90px; gap: 6px; }
+        .msg-bubble { max-width: 80%; font-size: 13px; padding: 5px 6px 6px 8px; }
+        .msg-meta { font-size: 10px; }
+        .sender-name { font-size: 11px; }
+        .wa-footer { padding: 8px 10px; gap: 6px; }
+        .wa-input-box { padding: 8px 10px; }
+        .wa-input { font-size: 14px; }
+        .wa-send-btn { font-size: 18px; }
+    }
+
+</style>
+
+<div class="chat-wrapper">
+    
+    <!-- WhatsApp Header -->
+    <div class="wa-header">
+        <a href="/community" class="wa-back-btn"><i class="bi bi-arrow-left"></i></a>
+        
+        <!-- Group Icon (Generic) -->
+        <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center text-white me-3" style="width: 40px; height: 40px;">
+            <i class="bi bi-people-fill"></i>
+        </div>
+
+        <div class="wa-header-info">
+            <h5><%= area %> Community</h5>
+            <small>tap here for group info</small>
+        </div>
+    </div>
+
+    <!-- Chat Area -->
+    <div id="chatBox">
+        <div class="text-center mt-5">
+            <div class="spinner-border text-secondary" style="width: 1.5rem; height: 1.5rem;" role="status"></div>
+        </div>
+    </div>
+
+    <!-- Input Footer -->
+    <div class="wa-footer">
+        <button class="wa-send-btn"><i class="bi bi-emoji-smile"></i></button>
+        <button class="wa-send-btn"><i class="bi bi-plus-lg"></i></button>
+        
+        <div class="wa-input-box">
+            <input type="text" id="msgInput" class="wa-input" placeholder="Type a message" autocomplete="off">
+        </div>
+        
+        <button class="wa-send-btn" onclick="sendMessage()">
+            <i class="bi bi-send-fill"></i>
+        </button>
+    </div>
+
+</div>
+
+<!-- JS Logic -->
+<script>
+    const areaName = "<%= area %>";
+    const myId = <%= user ? user.id : 'null' %>;
+    const myName = "<%= user ? user.name.replace(/"/g, '\\"') : '' %>";
+    const isGuest = (myId === null);
+    const chatBox = document.getElementById('chatBox');
+    let isFirstLoad = true;
+
+    // Auto scroll to bottom
+    function scrollToBottom() {
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    // Colors for different users (WhatsApp style names)
+    const nameColors = ['#e542a3', '#1f7aec', '#d8522d', '#00a884', '#6c757d'];
+    function getColor(name) {
+        let hash = 0;
+        for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+        return nameColors[Math.abs(hash) % nameColors.length];
+    }
+
+    function loadMessages() {
+        fetch('/api_community', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'fetch', area: areaName })
+        })
+        .then(res => res.json())
+        .then(data => {
+            let html = "";
+            if(data.length === 0) {
+                html = `<div class="text-center" style="margin-top: 20px;">
+                            <span style="background: #fff3cd; padding: 5px 10px; border-radius: 8px; font-size: 12px; color: #555; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">
+                                🔒 Messages are end-to-end encrypted. No one outside this chat can read them.
+                            </span>
+                        </div>`;
+            } else {
+                data.forEach(msg => {
+                    // For guests: isGuest=true and sender_id=3 means it's their message
+                    // For logged-in users: compare sender_id with their user.id
+                    const isMe = isGuest ? (msg.sender_id === 3) : (msg.sender_id === myId);
+                    
+                    // Format Time (e.g., 12:45 PM)
+                    const date = new Date(msg.created_at);
+                    const time = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                    html += `
+                    <div class="msg-container ${isMe ? 'me' : 'other'}">
+                        <div class="msg-bubble">
+                            ${!isMe ? `<span class="sender-name" style="color: ${getColor(msg.name)}">${msg.name}</span>` : ''}
+                            ${msg.message}
+                            <span class="msg-meta">
+                                ${time} 
+                                ${isMe ? '<i class="bi bi-check2-all text-primary"></i>' : ''}
+                            </span>
+                        </div>
+                    </div>`;
+                });
+            }
+
+            // Update DOM only if new message
+            // For now simple replace logic
+            chatBox.innerHTML = html;
+
+            if(isFirstLoad) { scrollToBottom(); isFirstLoad = false; }
+        });
+    }
+
+    function sendMessage() {
+        const input = document.getElementById('msgInput');
+        const msg = input.value.trim();
+        if(!msg) return;
+
+        // 1. Optimistic UI Update (Show message instantly before server response)
+        const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const tempHtml = `
+        <div class="msg-container me">
+            <div class="msg-bubble">
+                ${msg}
+                <span class="msg-meta">${now} <i class="bi bi-clock"></i></span>
+            </div>
+        </div>`;
+        chatBox.insertAdjacentHTML('beforeend', tempHtml);
+        scrollToBottom();
+        input.value = '';
+
+        // 2. Send to Server
+        let payload = { action: 'send', area: areaName, message: msg };
+        if (!myId) {
+            payload.name = 'Guest';
+        }
+
+        fetch('/api_community', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        }).then(() => {
+            loadMessages(); // Refresh to get real ID and tick
+        });
+    }
+
+    // Poll every 2 seconds
+    setInterval(loadMessages, 2000);
+    loadMessages();
+
+    // Enter Key
+    document.getElementById('msgInput').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') sendMessage();
+    });
+</script>

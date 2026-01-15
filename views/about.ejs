@@ -1,0 +1,597 @@
+<%- include('partials/header_sidebar') %>
+
+<!-- AOS Animation Library -->
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+<style>
+    /* --- CUSTOM STYLES FOR ABOUT PAGE --- */
+    
+    /* Parallax Hero */
+    .about-hero {
+        background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1522771753014-df2d992b0ed1?q=80&w=1920');
+        background-attachment: fixed;
+        background-position: center;
+        background-size: cover;
+        height: 60vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: -80px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Golden Text Gradient */
+    .text-gradient-gold {
+        background: linear-gradient(to right, #D4AF37, #F9D776, #D4AF37);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-size: 200% auto;
+        animation: shine 3s linear infinite;
+    }
+
+    @keyframes shine {
+        to { background-position: 200% center; }
+    }
+
+    /* Card Hover Effects */
+    .feature-card {
+        transition: all 0.4s ease;
+        border-bottom: 3px solid transparent;
+    }
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        border-bottom: 3px solid #D4AF37;
+    }
+    
+    .feature-icon {
+        width: 80px; height: 80px;
+        background: rgba(212, 175, 55, 0.1);
+        color: #D4AF37;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 2rem;
+        margin: 0 auto 20px auto;
+        transition: 0.4s;
+    }
+    .feature-card:hover .feature-icon {
+        background: #D4AF37;
+        color: white;
+        transform: rotateY(180deg);
+    }
+
+    /* Team Section */
+    .team-img-box {
+        overflow: hidden;
+        border-radius: 50%;
+        width: 150px; height: 150px;
+        margin: 0 auto 15px auto;
+        border: 3px solid #D4AF37;
+        transition: 0.4s;
+    }
+    .team-img-box img {
+        width: 100%; height: 100%; object-fit: cover; transition: 0.4s;
+    }
+    .team-card:hover .team-img-box {
+        transform: scale(1.1);
+        box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+    }
+
+    /* Testimonial Carousel */
+    .testimonial-card {
+        background: #fff;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        position: relative;
+        margin: 20px;
+    }
+    .quote-icon {
+        position: absolute; top: -20px; left: 30px;
+        background: #D4AF37; color: white;
+        width: 50px; height: 50px;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    /* CTA Section */
+    .cta-section {
+        background: linear-gradient(45deg, #1a1a1a, #333);
+        position: relative;
+        overflow: hidden;
+    }
+    .cta-section::before {
+        content: ''; position: absolute;
+        top: -50%; left: -50%; width: 200%; height: 200%;
+        background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
+        animation: rotate 20s linear infinite;
+    }
+    @keyframes rotate { from {transform: rotate(0deg);} to {transform: rotate(360deg);} }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 767.98px) {
+        .about-hero-sec {
+            min-height: 50vh;
+            padding: 80px 20px;
+        }
+        .hero-heading {
+            font-size: 2rem;
+        }
+        .hero-description {
+            font-size: 1rem;
+        }
+        .feature-card {
+            margin-bottom: 20px;
+        }
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            font-size: 1.6rem;
+        }
+        .team-img-box {
+            width: 120px;
+            height: 120px;
+        }
+        .testimonial-card {
+            padding: 25px;
+            margin: 15px;
+        }
+        .cta-section {
+            padding: 40px 20px !important;
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .about-hero-sec {
+            min-height: 45vh;
+            padding: 60px 16px;
+        }
+        .gold-line {
+            width: 50px;
+            height: 3px;
+        }
+        .hero-tag {
+            font-size: 0.75rem;
+            letter-spacing: 4px;
+        }
+        .hero-heading {
+            font-size: 1.5rem;
+            line-height: 1.2;
+            letter-spacing: 0.5px;
+        }
+        .hero-description {
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        .feature-card {
+            padding: 20px 12px;
+            margin-bottom: 15px;
+        }
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+        }
+        .feature-card h5 {
+            font-size: 1.1rem;
+        }
+        .team-img-box {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 10px;
+        }
+        .team-card h5 {
+            font-size: 1rem;
+        }
+        .testimonial-card {
+            padding: 20px 16px;
+            margin: 12px 8px;
+        }
+        .quote-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+            left: 15px;
+            top: -15px;
+        }
+        .cta-section {
+            padding: 30px 16px !important;
+        }
+        .cta-section h2 {
+            font-size: 1.6rem;
+        }
+        .cta-section p {
+            font-size: 0.9rem;
+        }
+    }
+
+</style>
+
+<!-- PREMIUM ABOUT HERO SECTION -->
+<section class="about-hero-sec d-flex align-items-center text-white">
+    <div class="container text-center" data-aos="fade-up" data-aos-duration="1000">
+
+        <!-- Gold Accent Line -->
+        <div class="gold-line mx-auto mb-4"></div>
+
+        <!-- Subtitle -->
+        <p class="hero-tag mb-2">WHO WE ARE</p>
+
+        <!-- Main Title -->
+        <h1 class="hero-heading mb-3">
+            About <span class="gold-text">HostelHub</span>
+        </h1>
+
+        <!-- Description -->
+        <p class="hero-description mx-auto">
+            Revolutionizing student living in Pakistan through modern hospitality, 
+            digital management, and a commitment to quality and transparency.
+        </p>
+    </div>
+</section>
+
+<style>
+/* SECTION BACKGROUND */
+.about-hero-sec {
+    min-height: 70vh;
+    padding: 140px 20px;
+    background: 
+        linear-gradient(120deg, rgba(0,0,0,0.75), rgba(0,0,0,0.55)),
+        url('/images/about-banner.jpg') center/cover no-repeat;
+    position: relative;
+}
+
+/* GOLD ACCENT LINE */
+.gold-line {
+    width: 70px;
+    height: 4px;
+    background: #D4AF37;
+    border-radius: 10px;
+}
+
+/* SMALL TAG */
+.hero-tag {
+    letter-spacing: 6px;
+    font-size: 0.9rem;
+    color: #D4AF37;
+    font-weight: 600;
+}
+
+/* MAIN HEADING */
+.hero-heading {
+    font-family: 'Cinzel', serif;
+    font-size: 3.2rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+/* GOLD TEXT */
+.gold-text {
+    color: #D4AF37;
+}
+
+/* DESCRIPTION */
+.hero-description {
+    max-width: 620px;
+    font-size: 1.15rem;
+    line-height: 1.7;
+    font-family: 'Poppins', sans-serif;
+    opacity: 0.92;
+    margin-top: 10px;
+}
+</style>
+
+<div class="content-wrapper">
+    
+    <!-- 2. OUR STORY (Split Layout) -->
+    <div class="container my-5 py-5">
+        <div class="row align-items-center">
+            <div class="col-md-6" data-aos="fade-right" data-aos-duration="1000">
+                <div class="position-relative p-3">
+                    <!-- Decorative Border Box -->
+                    <div style="position: absolute; top: 0; left: 0; width: 100px; height: 100px; border-top: 5px solid #D4AF37; border-left: 5px solid #D4AF37; z-index: 0;"></div>
+                    <div style="position: absolute; bottom: 0; right: 0; width: 100px; height: 100px; border-bottom: 5px solid #D4AF37; border-right: 5px solid #D4AF37; z-index: 0;"></div>
+                    
+                    <img src="https://images.unsplash.com/photo-1555854877-bab0e564b8d5?q=80&w=800" class="img-fluid rounded shadow-lg position-relative" style="z-index: 1;">
+                </div>
+            </div>
+            <div class="col-md-6 mt-5 mt-md-0 ps-md-5" data-aos="fade-left" data-aos-duration="1000">
+                <h5 class="fw-bold text-uppercase text-warning mb-3">Our Mission</h5>
+                <h2 class="fw-bold mb-4" style="font-family: 'Cinzel';">Bridging the Gap Between <br><span class="text-dark">Comfort & Affordability</span></h2>
+                <p class="text-muted" style="line-height: 1.8; font-size: 1.1rem;">
+                    HostelHub was born from a simple idea: finding a safe, affordable, and comfortable hostel shouldn't be a struggle. We connect students with verified hostel owners to create a seamless living experience.
+                </p>
+                <div class="row mt-4">
+                    <div class="col-6 mb-3" data-aos="fade-up" data-aos-delay="100">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-patch-check-fill fs-4 me-2 text-warning"></i> <span class="fw-bold">Verified Listings</span>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-3" data-aos="fade-up" data-aos-delay="200">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-shield-lock-fill fs-4 me-2 text-warning"></i> <span class="fw-bold">100% Secure</span>
+                        </div>
+                    </div>
+                    <div class="col-6" data-aos="fade-up" data-aos-delay="300">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-chat-dots-fill fs-4 me-2 text-warning"></i> <span class="fw-bold">Direct Chat</span>
+                        </div>
+                    </div>
+                    <div class="col-6" data-aos="fade-up" data-aos-delay="400">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-lightning-charge-fill fs-4 me-2 text-warning"></i> <span class="fw-bold">Fast Booking</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. LIVE STATS COUNTER -->
+    <div class="bg-dark text-white py-5 mb-5" id="stats-section">
+        <div class="container">
+            <div class="row text-center g-4">
+                <div class="col-md-3 col-6" data-aos="zoom-in" data-aos-delay="0">
+                    <h1 class="fw-bold display-4 text-warning counter" data-target="1500">0</h1>
+                    <p class="text-uppercase small ls-1">Happy Students</p>
+                </div>
+                <div class="col-md-3 col-6" data-aos="zoom-in" data-aos-delay="100">
+                    <h1 class="fw-bold display-4 text-warning counter" data-target="120">0</h1>
+                    <p class="text-uppercase small ls-1">Verified Hostels</p>
+                </div>
+                <div class="col-md-3 col-6" data-aos="zoom-in" data-aos-delay="200">
+                    <h1 class="fw-bold display-4 text-warning counter" data-target="50">0</h1>
+                    <p class="text-uppercase small ls-1">Areas Covered</p>
+                </div>
+                <div class="col-md-3 col-6" data-aos="zoom-in" data-aos-delay="300">
+                    <h1 class="fw-bold display-4 text-warning">4.9</h1>
+                    <p class="text-uppercase small ls-1">Average Rating</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. WHY CHOOSE US (Cards with Hover) -->
+    <div class="container mb-5 py-5">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h5 class="text-warning fw-bold text-uppercase">Why Choose Us</h5>
+            <h2 class="fw-bold display-5" style="font-family: 'Cinzel';">Core Values</h2>
+        </div>
+        <div class="row g-4">
+            <!-- Card 1 -->
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="0">
+                <div class="card feature-card border-0 shadow-sm p-4 text-center h-100">
+                    <div class="card-body">
+                        <div class="feature-icon"><i class="bi bi-shield-check"></i></div>
+                        <h4 class="fw-bold mb-3">Safety First</h4>
+                        <p class="text-muted">We verify every owner ID and hostel location to ensure a secure environment for students.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Card 2 -->
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="card feature-card border-0 shadow-sm p-4 text-center h-100">
+                    <div class="card-body">
+                        <div class="feature-icon"><i class="bi bi-wallet2"></i></div>
+                        <h4 class="fw-bold mb-3">Zero Commission</h4>
+                        <p class="text-muted">Connect directly with owners. No hidden agent fees, no extra charges. Pay actual rent.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Card 3 -->
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="400">
+                <div class="card feature-card border-0 shadow-sm p-4 text-center h-100">
+                    <div class="card-body">
+                        <div class="feature-icon"><i class="bi bi-people-fill"></i></div>
+                        <h4 class="fw-bold mb-3">Community</h4>
+                        <p class="text-muted">Join area-based chats, find roommates, and get honest reviews from seniors.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. MEET THE TEAM (3D Flip Cards) -->
+    <div class="container mb-5">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="fw-bold display-5" style="font-family: 'Cinzel';">Meet The Team</h2>
+            <p class="text-muted">The minds behind HostelHub</p>
+        </div>
+        
+        <div class="row justify-content-center g-4">
+            
+            <!-- Team Member 1 -->
+            <div class="col-md-3 col-sm-6" data-aos="zoom-in" data-aos-delay="0">
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <!-- Front Side (Image) -->
+                        <div class="flip-card-front">
+                            <img src="https://ui-avatars.com/api/?name=Usman+Ali&background=1a1a1a&color=D4AF37&size=250" alt="Avatar" style="width:100%; height:100%; object-fit:cover; border-radius: 15px;">
+                            <div class="front-overlay">
+                                <h5 class="fw-bold text-gold mb-0">Usman Ali</h5>
+                                <small class="text-white">Lead Developer</small>
+                            </div>
+                        </div>
+                        <!-- Back Side (Details) -->
+                        <div class="flip-card-back">
+                            <h5 class="fw-bold text-gold mb-2">Usman Ali</h5>
+                            <p class="small text-white-50 mb-4">Passionate Full Stack Developer specializing in Node.js & Modern UI Design.</p>
+                            <div class="d-flex justify-content-center gap-3">
+                                <a href="#" class="social-icon"><i class="bi bi-linkedin"></i></a>
+                                <a href="#" class="social-icon"><i class="bi bi-github"></i></a>
+                                <a href="#" class="social-icon"><i class="bi bi-envelope-fill"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Team Member 2 -->
+            <div class="col-md-3 col-sm-6" data-aos="zoom-in" data-aos-delay="200">
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <!-- Front Side (Image) -->
+                        <div class="flip-card-front">
+                            <img src="https://ui-avatars.com/api/?name=Project+Supervisor&background=1a1a1a&color=D4AF37&size=250" alt="Avatar" style="width:100%; height:100%; object-fit:cover; border-radius: 15px;">
+                            <div class="front-overlay">
+                                <h5 class="fw-bold text-gold mb-0">Supervisor</h5>
+                                <small class="text-white">Mentor & Guide</small>
+                            </div>
+                        </div>
+                        <!-- Back Side (Details) -->
+                        <div class="flip-card-back">
+                            <h5 class="fw-bold text-gold mb-2">Project Mentor</h5>
+                            <p class="small text-white-50 mb-4">Expert in Software Engineering providing guidance and technical oversight.</p>
+                            <div class="d-flex justify-content-center gap-3">
+                                <a href="#" class="social-icon"><i class="bi bi-linkedin"></i></a>
+                                <a href="#" class="social-icon"><i class="bi bi-globe"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <style>
+        /* --- 3D FLIP CARD STYLES --- */
+        .flip-card {
+            background-color: transparent;
+            width: 100%;
+            height: 320px;
+            perspective: 1000px; /* Enables 3D effect */
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .flip-card:hover .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .flip-card-front {
+            background-color: #fff;
+        }
+
+        .front-overlay {
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-top: 2px solid #D4AF37;
+        }
+
+        .flip-card-back {
+            background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+            color: white;
+            transform: rotateY(180deg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border: 2px solid #D4AF37;
+        }
+
+        .text-gold { color: #D4AF37 !important; }
+
+        .social-icon {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            color: #D4AF37;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem;
+            transition: 0.3s;
+            text-decoration: none;
+        }
+        .social-icon:hover {
+            background: #D4AF37;
+            color: #1a1a1a;
+            transform: translateY(-3px);
+        }
+    </style>
+
+    <!-- 6. CALL TO ACTION (CTA) -->
+    <div class="container mb-5">
+        <div class="card cta-section border-0 shadow-lg text-white" style="border-radius: 20px;" data-aos="zoom-in">
+            <div class="card-body p-5 text-center position-relative" style="z-index: 1;">
+                <h2 class="fw-bold mb-3" style="font-family: 'Cinzel';">Ready to Find Your Perfect Place?</h2>
+                <p class="mb-4 text-white-50 fs-5">Join thousands of students and owners on Pakistan's #1 hostel network.</p>
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    <a href="/" class="btn btn-light px-5 py-3 rounded-pill fw-bold shadow-lg" style="color: #D4AF37;">Browse Hostels</a>
+                    <a href="/register" class="btn btn-outline-warning px-5 py-3 rounded-pill fw-bold">Register Now</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- AOS JS Library -->
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    // Initialize Animate On Scroll
+    AOS.init({
+        once: true, // Animation happens only once per scroll
+        offset: 100, // Trigger offset
+    });
+
+    // Counter Animation Script
+    const counters = document.querySelectorAll('.counter');
+    const speed = 200; // The lower the slower
+
+    const animateCounters = () => {
+        counters.forEach(counter => {
+            const updateCount = () => {
+                const target = +counter.getAttribute('data-target');
+                const count = +counter.innerText;
+                const inc = target / speed;
+
+                if (count < target) {
+                    counter.innerText = Math.ceil(count + inc);
+                    setTimeout(updateCount, 20);
+                } else {
+                    counter.innerText = target + "+";
+                }
+            };
+            updateCount();
+        });
+    }
+
+    // Trigger counter when scrolled into view (Simple Intersection Observer)
+    let observer = new IntersectionObserver((entries, observer) => { 
+        entries.forEach(entry => {
+            if(entry.isIntersecting){
+                animateCounters();
+                observer.unobserve(entry.target);
+            }
+        });
+    }, {threshold: 0.5});
+
+    observer.observe(document.getElementById('stats-section'));
+
+</script>
+
+<%- include('partials/footer') %>

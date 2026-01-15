@@ -1,0 +1,55 @@
+<%- include('partials/header_sidebar') %>
+
+<div class="content-wrapper">
+    <div class="container" style="max-width: 700px;">
+        <h2 class="fw-bold mb-4 text-center" style="font-family: 'Cinzel';">Payment Methods</h2>
+        
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-5">
+                <p class="text-muted mb-4">Enter your account details. Students will see these when paying rent.</p>
+                
+                <form action="/save_payment_settings" method="POST">
+                    
+                    <h5 class="text-success"><i class="bi bi-phone"></i> Mobile Wallets</h5>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label>JazzCash Name</label>
+                            <input type="text" name="jc_name" class="form-control" value="<%= data.jazzcash_name || '' %>">
+                        </div>
+                        <div class="col-md-6">
+                            <label>JazzCash Number</label>
+                            <input type="text" name="jc_no" class="form-control" value="<%= data.jazzcash_no || '' %>">
+                        </div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label>EasyPaisa Name</label>
+                            <input type="text" name="ep_name" class="form-control" value="<%= data.easypaisa_name || '' %>">
+                        </div>
+                        <div class="col-md-6">
+                            <label>EasyPaisa Number</label>
+                            <input type="text" name="ep_no" class="form-control" value="<%= data.easypaisa_no || '' %>">
+                        </div>
+                    </div>
+
+                    <h5 class="text-primary"><i class="bi bi-bank"></i> Bank Transfer</h5>
+                    <div class="mb-3">
+                        <label>Bank Name</label>
+                        <input type="text" name="bank_name" class="form-control" value="<%= data.bank_name || '' %>">
+                    </div>
+                    <div class="mb-3">
+                        <label>Account Title</label>
+                        <input type="text" name="bank_title" class="form-control" value="<%= data.bank_acc_title || '' %>">
+                    </div>
+                    <div class="mb-4">
+                        <label>IBAN / Account Number</label>
+                        <input type="text" name="bank_iban" class="form-control" value="<%= data.bank_iban || '' %>">
+                    </div>
+
+                    <button type="submit" class="btn btn-dark w-100 py-2">Save Settings</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<%- include('partials/footer') %>

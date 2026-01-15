@@ -1,0 +1,231 @@
+<%- include('partials/header_sidebar') %>
+
+<style>
+    /* --- CUSTOM COMPARISON STYLES --- */
+    
+    /* VS Header Section */
+    .vs-header {
+        position: relative;
+        margin-bottom: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .vs-card {
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        transition: 0.3s;
+        text-align: center;
+        background: white;
+        padding-bottom: 20px;
+    }
+    .vs-card:hover { transform: translateY(-5px); }
+    
+    .vs-img {
+        width: 100%; height: 200px; object-fit: cover;
+        border-bottom: 5px solid #D4AF37;
+    }
+    
+    .vs-circle {
+        width: 60px; height: 60px;
+        background: #1a1a1a; color: #D4AF37;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 900; font-family: 'Cinzel'; font-size: 1.2rem;
+        border: 4px solid white;
+        position: absolute; z-index: 10;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    /* Table Styles */
+    .compare-table { border-radius: 15px; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
+    .compare-table thead { background: #1a1a1a; color: white; }
+    .compare-table th { padding: 15px; text-transform: uppercase; letter-spacing: 1px; font-size: 0.85rem; border: none; }
+    .compare-table td { vertical-align: middle; padding: 20px; border-color: #f0f0f0; }
+    
+    /* Winner Highlight */
+    .winner-cell {
+        background-color: rgba(46, 204, 113, 0.08) !important; /* Light Green */
+        border-left: 3px solid #2ecc71 !important;
+        color: #1a1a1a; font-weight: 600;
+    }
+    
+    /* Verdict Section */
+    .verdict-card {
+        background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+        border: 1px solid #eee;
+        border-radius: 20px;
+        padding: 30px;
+        position: relative;
+        overflow: hidden;
+    }
+    .verdict-card::before {
+        content: ''; position: absolute; top: 0; left: 0; width: 5px; height: 100%;
+        background: #D4AF37;
+    }
+    .recommendation-badge {
+        background: #D4AF37; color: white; padding: 5px 15px;
+        border-radius: 30px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px;
+        font-weight: bold; display: inline-block; margin-bottom: 10px;
+    }
+</style>
+
+<div class="content-wrapper container mt-5 mb-5">
+    
+    <div class="text-center mb-5">
+        <h5 class="text-gold text-uppercase ls-2 small" style="color: #D4AF37;">Side by Side</h5>
+        <h1 class="fw-bold display-5" style="font-family: 'Cinzel';">Comparison Showdown</h1>
+    </div>
+
+    <!-- 1. VISUAL HEADER (VS) -->
+    <div class="row align-items-center justify-content-center mb-5 position-relative">
+        
+        <!-- Hostel 1 -->
+        <div class="col-md-5 col-5">
+            <div class="vs-card">
+                <img src="<%= h1.image ? '/uploads/'+h1.image : 'https://via.placeholder.com/300' %>" class="vs-img">
+                <h4 class="fw-bold mt-3 mb-0" style="font-family: 'Cinzel';"><%= h1.name %></h4>
+                <p class="text-muted small"><%= h1.area %></p>
+                <h5 class="text-success fw-bold">Rs. <%= h1.price.toLocaleString() %></h5>
+            </div>
+        </div>
+
+        <!-- VS Circle -->
+        <div class="vs-circle">VS</div>
+
+        <!-- Hostel 2 -->
+        <div class="col-md-5 col-5">
+            <div class="vs-card">
+                <img src="<%= h2.image ? '/uploads/'+h2.image : 'https://via.placeholder.com/300' %>" class="vs-img">
+                <h4 class="fw-bold mt-3 mb-0" style="font-family: 'Cinzel';"><%= h2.name %></h4>
+                <p class="text-muted small"><%= h2.area %></p>
+                <h5 class="text-success fw-bold">Rs. <%= h2.price.toLocaleString() %></h5>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. DETAILED TABLE -->
+    <div class="table-responsive mb-5">
+        <table class="table compare-table text-center bg-white">
+            <thead>
+                <tr>
+                    <th style="width: 20%;">Feature</th>
+                    <th style="width: 40%;"><%= h1.name %></th>
+                    <th style="width: 40%;"><%= h2.name %></th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Price Comparison -->
+                <tr>
+                    <td class="fw-bold text-muted text-start ps-4">Monthly Rent</td>
+                    <td class="<%= h1.id === priceWinner ? 'winner-cell' : '' %>">
+                        Rs. <%= h1.price.toLocaleString() %>
+                        <% if(h1.id === priceWinner) { %> <i class="bi bi-check-circle-fill text-success ms-2"></i> <span class="badge bg-success ms-1">Cheaper</span> <% } %>
+                    </td>
+                    <td class="<%= h2.id === priceWinner ? 'winner-cell' : '' %>">
+                        Rs. <%= h2.price.toLocaleString() %>
+                        <% if(h2.id === priceWinner) { %> <i class="bi bi-check-circle-fill text-success ms-2"></i> <span class="badge bg-success ms-1">Cheaper</span> <% } %>
+                    </td>
+                </tr>
+
+                <!-- Category -->
+                <tr>
+                    <td class="fw-bold text-muted text-start ps-4">Type</td>
+                    <td><span class="badge bg-dark"><%= h1.category %></span></td>
+                    <td><span class="badge bg-dark"><%= h2.category %></span></td>
+                </tr>
+
+                <!-- Facilities Comparison -->
+                <% 
+                    const f1_count = h1.facilities ? h1.facilities.split(',').length : 0;
+                    const f2_count = h2.facilities ? h2.facilities.split(',').length : 0;
+                %>
+                <tr>
+                    <td class="fw-bold text-muted text-start ps-4">Amenities</td>
+                    <td class="<%= f1_count > f2_count ? 'winner-cell' : '' %>">
+                        <div class="d-flex flex-wrap justify-content-center gap-1">
+                            <% if(h1.facilities) h1.facilities.split(',').forEach(f => { %>
+                                <span class="badge bg-light text-dark border"><%= f %></span>
+                            <% }) %>
+                        </div>
+                        <small class="text-muted mt-2 d-block"><%= f1_count %> Features</small>
+                    </td>
+                    <td class="<%= f2_count > f1_count ? 'winner-cell' : '' %>">
+                        <div class="d-flex flex-wrap justify-content-center gap-1">
+                            <% if(h2.facilities) h2.facilities.split(',').forEach(f => { %>
+                                <span class="badge bg-light text-dark border"><%= f %></span>
+                            <% }) %>
+                        </div>
+                        <small class="text-muted mt-2 d-block"><%= f2_count %> Features</small>
+                    </td>
+                </tr>
+
+                <!-- Action Buttons -->
+                <tr>
+                    <td class="fw-bold text-muted text-start ps-4">Action</td>
+                    <td>
+                        <a href="/details/<%= h1.id %>" class="btn btn-outline-dark rounded-pill btn-sm px-4">View Details</a>
+                    </td>
+                    <td>
+                        <a href="/details/<%= h2.id %>" class="btn btn-outline-dark rounded-pill btn-sm px-4">View Details</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 3. FINAL VERDICT (CONCLUSION) -->
+    <div class="row g-4">
+        
+        <!-- Recommendation Box -->
+        <div class="col-md-12">
+            <div class="verdict-card shadow-lg">
+                <h3 class="fw-bold mb-4" style="font-family: 'Cinzel';"><i class="bi bi-trophy-fill text-gold" style="color: #D4AF37;"></i> Final Verdict</h3>
+                
+                <div class="row">
+                    <!-- Option 1 Analysis -->
+                    <div class="col-md-6 border-end">
+                        <h5 class="fw-bold"><%= h1.name %></h5>
+                        <ul class="list-unstyled text-muted small mt-3">
+                            <li class="mb-2"><i class="bi bi-tag-fill text-success"></i> Price: Rs. <%= h1.price.toLocaleString() %></li>
+                            <li class="mb-2"><i class="bi bi-grid-fill text-primary"></i> <%= f1_count %> Facilities</li>
+                        </ul>
+                        <% if(h1.id === priceWinner) { %>
+                            <div class="alert alert-success py-2 small"><i class="bi bi-piggy-bank-fill"></i> Best for Budget</div>
+                        <% } %>
+                        <% if(f1_count > f2_count) { %>
+                            <div class="alert alert-info py-2 small"><i class="bi bi-stars"></i> Most Features</div>
+                        <% } %>
+                    </div>
+
+                    <!-- Option 2 Analysis -->
+                    <div class="col-md-6 ps-md-4">
+                        <h5 class="fw-bold"><%= h2.name %></h5>
+                        <ul class="list-unstyled text-muted small mt-3">
+                            <li class="mb-2"><i class="bi bi-tag-fill text-success"></i> Price: Rs. <%= h2.price.toLocaleString() %></li>
+                            <li class="mb-2"><i class="bi bi-grid-fill text-primary"></i> <%= f2_count %> Facilities</li>
+                        </ul>
+                        <% if(h2.id === priceWinner) { %>
+                            <div class="alert alert-success py-2 small"><i class="bi bi-piggy-bank-fill"></i> Best for Budget</div>
+                        <% } %>
+                        <% if(f2_count > f1_count) { %>
+                            <div class="alert alert-info py-2 small"><i class="bi bi-stars"></i> Most Features</div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+                
+                <div class="text-center">
+                    <p class="text-muted mb-3">Based on your preference for <strong>Price vs Features</strong>, choose wisely!</p>
+                    <a href="/" class="btn btn-dark rounded-pill px-4">Compare Different Hostels</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<%- include('partials/footer') %>

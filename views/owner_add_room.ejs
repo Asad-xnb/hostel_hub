@@ -1,0 +1,59 @@
+<%- include('partials/header_sidebar') %>
+
+<div class="content-wrapper">
+    <div class="container" style="max-width: 800px; padding-bottom: 50px;">
+        
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold mb-0" style="font-family: 'Cinzel'; color: #D4AF37;">Add Room to <%= hostel.name %></h2>
+            <a href="/owner_dashboard" class="btn btn-outline-dark rounded-pill">Back to Dashboard</a>
+        </div>
+        
+        <form action="/add_room/<%= hostel.id %>" method="POST" enctype="multipart/form-data" class="card p-5 shadow-lg border-0">
+            
+            <h5 class="text-dark border-bottom pb-2 mb-3">Room Configuration</h5>
+            
+            <input type="hidden" name="hostel_id" value="<%= hostel.id %>">
+            
+            <div class="mb-3">
+                <label class="fw-bold">Room Name / Type</label>
+                <input type="text" name="name" class="form-control" required placeholder="e.g. Standard Triple (A1)">
+                <small class="text-muted">A short identifier for this room.</small>
+            </div>
+
+            <div class="mb-3">
+                <label class="fw-bold">Room Description (Optional)</label>
+                <textarea name="description" class="form-control" rows="2" placeholder="Features like attached bath, balcony, etc."></textarea>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="fw-bold">Total Seats</label>
+                    <input type="number" name="total_seats" class="form-control" required value="2" min="1">
+                    <small class="text-muted">Max capacity of the room.</small>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="fw-bold">Occupied Seats</label>
+                    <input type="number" name="occupied_seats" class="form-control" value="0" min="0">
+                    <small class="text-muted">How many seats are currently booked.</small>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="fw-bold">Price Per Seat (PKR)</label>
+                    <input type="number" name="price_per_seat" class="form-control" required placeholder="e.g. 10000">
+                </div>
+            </div>
+
+            <h5 class="text-dark border-bottom pb-2 mt-4 mb-3">Room Photos</h5>
+            <div class="mb-4 border p-3 rounded bg-light">
+                <label class="fw-bold text-primary">Select Images (Max 3)</label>
+                <input type="file" name="room_images" class="form-control mt-2" multiple accept="image/*">
+                <small class="text-muted">Show what the interior of this specific room looks like.</small>
+            </div>
+
+            <button type="submit" class="btn btn-gold w-100 py-3 fw-bold fs-5 shadow-sm">
+                Save Room & Finish
+            </button>
+        </form>
+        
+        </div>
+</div>
+<%- include('partials/footer') %>

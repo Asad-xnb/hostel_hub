@@ -1,0 +1,123 @@
+<footer class="bg-dark text-white pt-5 mt-5" style="border-top: 4px solid #D4AF37; width:100%; left:0;">
+    <div class="container-fluid px-0">
+        <div class="container">
+        <div class="row g-4">
+            
+            <!-- Brand -->
+            <div class="col-lg-4 col-md-6">
+                <h3 class="fw-bold mb-3" style="font-family: 'Cinzel'; color: #D4AF37;">HostelHub</h3>
+                <p class="text-secondary small" style="line-height: 1.8;">
+                    Pakistan's #1 premium accommodation finder. We bridge the gap between students and safe, verified hostels with a seamless digital experience.
+                </p>
+                <div class="d-flex gap-3 mt-3">
+                    <a href="#" class="text-white"><i class="bi bi-facebook fs-5"></i></a>
+                    <a href="#" class="text-white"><i class="bi bi-instagram fs-5"></i></a>
+                    <a href="#" class="text-white"><i class="bi bi-twitter fs-5"></i></a>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="col-lg-2 col-md-6">
+                <h6 class="fw-bold text-warning mb-3" style="color: #D4AF37 !important;">QUICK LINKS</h6>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="/" class="text-secondary text-decoration-none hover-gold">Home</a></li>
+                    <li class="mb-2"><a href="/about" class="text-secondary text-decoration-none hover-gold">About Us</a></li>
+                    <li class="mb-2"><a href="/contact" class="text-secondary text-decoration-none hover-gold">Contact Us</a></li>
+                    <li class="mb-2"><a href="/community" class="text-secondary text-decoration-none hover-gold">Community</a></li>
+                </ul>
+            </div>
+
+            <!-- Support -->
+            <div class="col-lg-2 col-md-6">
+                <h6 class="fw-bold text-warning mb-3" style="color: #D4AF37 !important;">SUPPORT</h6>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><a href="#" class="text-secondary text-decoration-none hover-gold">Help Center</a></li>
+                    <li class="mb-2"><a href="#" class="text-secondary text-decoration-none hover-gold">Privacy Policy</a></li>
+                    <li class="mb-2"><a href="/login" class="text-secondary text-decoration-none hover-gold">Login / Register</a></li>
+                </ul>
+            </div>
+
+            <!-- Contact -->
+            <div class="col-lg-4 col-md-6">
+                <h6 class="fw-bold text-warning mb-3" style="color: #D4AF37 !important;">CONTACT</h6>
+                <p class="small text-secondary mb-1"><i class="bi bi-geo-alt-fill me-2"></i> D-Ground, Faisalabad</p>
+                <p class="small text-secondary mb-1"><i class="bi bi-envelope-fill me-2"></i> support@hostelhub.pk</p>
+                <p class="small text-secondary"><i class="bi bi-telephone-fill me-2"></i> +92 300 1234567</p>
+            </div>
+        </div>
+
+            <hr class="border-secondary mt-5 mb-3">
+            <div class="text-center pb-4 text-secondary small">
+                &copy; 2025 HostelHub.pk - Designed with <i class="bi bi-heart-fill text-danger"></i>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- AI CHATBOT WIDGET (Always present in footer) -->
+<div id="ai-chat-widget" style="position: fixed; bottom: 30px; right: 30px; z-index: 10000;">
+    <button onclick="toggleAIChat()" style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #D4AF37, #1a1a1a); color: white; border: none; font-size: 28px; box-shadow: 0 5px 20px rgba(0,0,0,0.3); cursor: pointer;">
+        <i class="bi bi-robot"></i>
+    </button>
+
+    <div id="ai-chat-window" style="display: none; position: absolute; bottom: 80px; right: 0; width: 320px; height: 450px; background: white; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); overflow: hidden; flex-direction: column; border: 1px solid #eee;">
+        <div style="background: #1a1a1a; color: #D4AF37; padding: 15px; display: flex; justify-content: space-between; font-family: 'Cinzel'; font-weight: bold;">
+            <span>HostelHub AI</span>
+            <button onclick="toggleAIChat()" class="btn-close btn-close-white"></button>
+        </div>
+        
+        <div id="ai-messages" style="flex: 1; padding: 15px; overflow-y: auto; background: #f9f9f9; display: flex; flex-direction: column; gap: 10px;">
+            <div style="padding: 10px 15px; border-radius: 15px; max-width: 80%; font-size: 13px; background: #fff; border: 1px solid #eee; align-self: flex-start;">
+                Hello! How can I help you find a hostel today?
+            </div>
+        </div>
+
+        <div style="padding: 10px; background: white; border-top: 1px solid #eee; display: flex; gap: 10px;">
+            <input type="text" id="ai-input" placeholder="Ask something..." style="flex: 1; padding: 8px 15px; border-radius: 20px; border: 1px solid #ddd; outline: none;">
+            <button onclick="sendAIMessage()" style="background: #1a1a1a; color: #D4AF37; border: none; width: 40px; height: 40px; border-radius: 50%;"><i class="bi bi-send-fill"></i></button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleAIChat() {
+        const win = document.getElementById('ai-chat-window');
+        win.style.display = (win.style.display === 'none') ? 'flex' : 'none';
+    }
+
+    function sendAIMessage() {
+        const input = document.getElementById('ai-input');
+        const msg = input.value.trim();
+        if (!msg) return;
+
+        const chatBox = document.getElementById('ai-messages');
+        chatBox.innerHTML += `<div style="padding: 10px 15px; border-radius: 15px; max-width: 80%; font-size: 13px; background: #D4AF37; color: white; align-self: flex-end;">${msg}</div>`;
+        input.value = "";
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        fetch('/api_ai', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: msg })
+        })
+        .then(response => response.text())
+        .then(data => {
+            chatBox.innerHTML += `<div style="padding: 10px 15px; border-radius: 15px; max-width: 80%; font-size: 13px; background: #fff; border: 1px solid #eee; align-self: flex-start;">${data}</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+        });
+    }
+</script>
+<script>
+    function toggleAIChat() {
+        const win = document.getElementById('ai-chat-window');
+        win.style.display = (win.style.display === 'none') ? 'flex' : 'none';
+    }
+
+    function sendAIMessage() {
+        // ... existing sendAIMessage logic ...
+    }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

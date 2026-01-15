@@ -1,0 +1,85 @@
+<%- include('partials/header_sidebar') %>
+
+<div class="content-wrapper">
+    <div class="container mt-4">
+        <h2 class="fw-bold mb-4" style="font-family: 'Cinzel'; color: #D4AF37;">Admin Control Center</h2>
+
+        <!-- Stats Cards -->
+        <div class="row g-3 mb-5">
+            <div class="col-md-4">
+                <div class="card bg-dark text-white p-3 border-gold">
+                    <h3><%= stats.totalUsers %></h3>
+                    <small>Total Users</small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-dark text-white p-3 border-gold">
+                    <h3><%= stats.totalHostels %></h3>
+                    <small>Total Hostels</small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-dark text-white p-3 border-gold">
+                    <h3><%= stats.totalBookings %></h3>
+                    <small>Total Bookings</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Manage Hostels -->
+        <div class="card shadow-sm border-0 mb-5">
+            <div class="card-header bg-white fw-bold">Manage Hostels (Verification)</div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr><th>Hostel</th><th>Owner</th><th>Status</th><th>Action</th></tr>
+                    </thead>
+                    <tbody>
+                        <% hostels.forEach(h => { %>
+                            <tr>
+                                <td class="fw-bold"><%= h.name %></td>
+                                <td><%= h.owner_name %></td>
+                                <td>
+                                    <% if(h.is_verified) { %> <span class="badge bg-success">Verified</span> <% } else { %> <span class="badge bg-warning text-dark">Pending</span> <% } %>
+                                </td>
+                                <td>
+                                    <% if(!h.is_verified) { %>
+                                        <a href="/admin/verify_hostel/<%= h.id %>" class="btn btn-sm btn-primary">Verify</a>
+                                    <% } else { %>
+                                        <i class="bi bi-check-circle-fill text-success"></i>
+                                    <% } %>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Manage Users -->
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white fw-bold">Manage Users</div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr><th>Name</th><th>Email</th><th>Role</th><th>Action</th></tr>
+                    </thead>
+                    <tbody>
+                        <% users.forEach(u => { %>
+                            <tr>
+                                <td><%= u.name %></td>
+                                <td><%= u.email %></td>
+                                <td><span class="badge bg-secondary"><%= u.role %></span></td>
+                                <td>
+                                    <a href="/admin/delete_user/<%= u.id %>" class="btn btn-sm btn-danger" onclick="return confirm('Delete this user?');">Delete</a>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+<%- include('partials/footer') %>

@@ -1,0 +1,718 @@
+<%- include('partials/header_sidebar') %>
+
+<style>
+    /* Responsive table styling for payment history */
+    @media (max-width: 767.98px) {
+        .table { font-size: 0.85rem; }
+        .table thead { display: none; }
+        .table tbody { display: block; }
+        .table tr {
+            display: block;
+            margin-bottom: 15px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 10px;
+        }
+        .table td {
+            display: block;
+            text-align: right;
+            padding: 8px 0;
+            border: none;
+            position: relative;
+            padding-left: 50%;
+        }
+        .table td::before {
+            content: attr(data-label);
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+            width: 45%;
+            text-align: left;
+        }
+        .table td:last-child { border-bottom: none; }
+    }
+
+    @media (max-width: 575.98px) {
+        .card-header { padding: 12px 15px !important; }
+        .card-header h5 { font-size: 1rem; }
+        .btn-sm { padding: 6px 12px; font-size: 0.75rem; }
+        .badge { padding: 4px 8px; font-size: 0.7rem; }
+    }
+</style>
+
+<div class="content-wrapper">
+    <div class="container-fluid mb-5" style="padding-top: 20px;">
+
+        <!-- 1. HEADER -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold mb-0" style="font-family: 'Cinzel';">Student Dashboard</h2>
+                <p class="text-muted small">Welcome back, <%= user.name %>!</p>
+            </div>
+            
+            <% if (stay && stay.announcement) { %>
+                <button class="btn btn-warning position-relative shadow-sm" data-bs-toggle="modal" data-bs-target="#announcementModal">
+                    <i class="bi bi-bell-fill"></i> Announcement
+                    <span class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle"></span>
+                </button>
+            <% } %>
+        </div>
+
+        <!-- Quick Actions: Bookings / Complaints / Wishlist / Settings (moved from owner dashboard) -->
+        <div class="row g-3 mb-4">
+            <div class="col-12 col-sm-6 col-md-3">
+                <div class="card h-100 border-0 shadow-sm p-3 text-center hover-shadow btn-hover">
+                    <div class="d-flex align-items-center justify-content-center mb-3" style="width:64px;height:64px;margin:0 auto;border-radius:12px;background: linear-gradient(135deg, #fff6e6, #f8efe0);">
+                        <i class="bi bi-calendar-check text-gold fs-3"></i>
+                    </div>
+                    <h6 class="fw-bold">My Bookings</h6>
+                    <p class="small text-muted">View and manage booking requests</p>
+                    <a href="javascript:void(0)" onclick="openSettings('bookings')" class="btn btn-sm btn-gold mt-2 w-100">Open Bookings</a>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-3">
+                <div class="card h-100 border-0 shadow-sm p-3 text-center hover-shadow btn-hover">
+                    <div class="d-flex align-items-center justify-content-center mb-3" style="width:64px;height:64px;margin:0 auto;border-radius:12px;background: linear-gradient(135deg, #fff6f6, #f9f0f0);">
+                        <i class="bi bi-exclamation-triangle text-danger fs-3"></i>
+                    </div>
+                    <h6 class="fw-bold">Complaints</h6>
+                    <p class="small text-muted">Report and track issues</p>
+                    <a href="#complaintModal" data-bs-toggle="modal" class="btn btn-sm btn-outline-danger mt-2 w-100">Report Issue</a>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-3">
+                <div class="card h-100 border-0 shadow-sm p-3 text-center hover-shadow btn-hover">
+                    <div class="d-flex align-items-center justify-content-center mb-3" style="width:64px;height:64px;margin:0 auto;border-radius:12px;background: linear-gradient(135deg, #f6fff6, #eff9ef);">
+                        <i class="bi bi-heart text-danger fs-3"></i>
+                    </div>
+                    <h6 class="fw-bold">Wishlist</h6>
+                    <p class="small text-muted">See properties you saved</p>
+                    <a href="javascript:void(0)" onclick="openSettings('wishlist')" class="btn btn-sm btn-outline-secondary mt-2 w-100">Open Wishlist</a>
+                </div>
+            </div>
+            <div class="col-12 col-sm-6 col-md-3">
+                <div class="card h-100 border-0 shadow-sm p-3 text-center hover-shadow btn-hover">
+                    <div class="d-flex align-items-center justify-content-center mb-3" style="width:64px;height:64px;margin:0 auto;border-radius:12px;background: linear-gradient(135deg, #fffaf0, #f8f6ef);">
+                        <i class="bi bi-gear text-gold fs-3"></i>
+                    </div>
+                    <h6 class="fw-bold">Settings</h6>
+                    <p class="small text-muted">Manage account & preferences</p>
+                    <a href="javascript:void(0)" onclick="openSettings('info')" class="btn btn-sm btn-outline-dark mt-2 w-100">Open Settings</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. RENT & STAY OVERVIEW -->
+        <div class="row g-3 mb-4">
+            
+            <% if (activeBooking) { %>
+                <!-- RENT HISTORY CARD (The Calendar) -->
+                <div class="col-12 col-lg-8">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                            <h5 class="fw-bold mb-0 text-gold" style="color: #D4AF37;">
+                                <i class="bi bi-calendar-check-fill me-2"></i> Rent History & Receipts
+                            </h5>
+                            <span class="badge bg-dark">Monthly Record</span>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0 text-center">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Duration / Cycle</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Action / Receipt</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% payments.forEach(pay => { %>
+                                        <tr>
+                                            <td class="fw-bold" data-label="Duration / Cycle"><%= pay.month_year %></td>
+                                            <td data-label="Amount">Rs. <%= pay.amount.toLocaleString() %></td>
+                                            <td data-label="Status">
+                                                <% if(pay.status == 'Pending') { %>
+                                                    <span class="badge bg-danger">Unpaid</span>
+                                                <% } else if(pay.status == 'Submitted') { %>
+                                                    <span class="badge bg-warning text-dark">Verifying</span>
+                                                <% } else { %>
+                                                    <span class="badge bg-success">Paid</span>
+                                                <% } %>
+                                            </td>
+                                            <td data-label="Action">
+                                                <% if(pay.status == 'Pending') { %>
+                                                    <!-- Pay Button -->
+                                                    <button class="btn btn-sm btn-gold shadow-sm" onclick="openPayModal('<%= pay.id %>', '<%= pay.month_year %>')">
+                                                        <i class="bi bi-upload"></i> <span class="d-none d-sm-inline">Upload Proof</span>
+                                                    </button>
+                                                <% } else { %>
+                                                    <!-- View Receipt Button -->
+                                                    <a href="/uploads/<%= pay.proof_image %>" target="_blank" class="btn btn-sm btn-outline-dark">
+                                                        <i class="bi bi-eye"></i> <span class="d-none d-sm-inline">View Receipt</span>
+                                                    </a>
+                                                <% } %>
+                                            </td>
+                                        </tr>
+                                    <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STAY INFO CARD -->
+                <div class="col-12 col-lg-4">
+                    <div class="card bg-dark text-white border-0 shadow h-100 p-4 position-relative overflow-hidden">
+                        <div style="position:absolute; top:-20px; right:-20px; font-size: 100px; opacity:0.1; color:white;">
+                            <i class="bi bi-house-door-fill"></i>
+                        </div>
+                        <h6 class="text-gold text-uppercase ls-1">Current Residence</h6>
+                        <h3 class="fw-bold mb-1"><%= stay.hostel_name %></h3>
+                        
+                        <div class="mt-4">
+                            <div class="d-flex justify-content-between mb-2 border-bottom border-secondary pb-2">
+                                <span class="text-white-50">Joined On</span>
+                                <span class="fw-bold"><%= stay.joinDate %></span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2 border-bottom border-secondary pb-2">
+                                <span class="text-white-50">Total Stay</span>
+                                <span class="fw-bold"><%= stay.daysStayed %> Days</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-white-50">Next Due</span>
+                                <!-- Dynamically find pending month -->
+                                <span class="fw-bold text-warning">
+                                    <%= payments.find(p => p.status === 'Pending')?.month_year || "All Paid" %>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 d-grid gap-2">
+                            <a href="/chat/<%= stay.owner_id %>" class="btn btn-outline-light btn-sm">
+                                <i class="bi bi-chat-dots"></i> Message Owner
+                            </a>
+                            <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#complaintModal">
+                                <i class="bi bi-exclamation-circle"></i> Report Issue
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            <% } else { %>
+                <div class="col-12">
+                    <div class="alert alert-warning text-center p-5 shadow-sm rounded-3">
+                        <i class="bi bi-house-slash display-1 text-warning mb-3"></i>
+                        <h4>No Active Booking</h4>
+                        <p>You haven't booked a hostel yet. Browse our premium listings now.</p>
+                        <a href="/" class="btn btn-dark">Find a Hostel</a>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+
+        <!-- 3. MERGED DASHBOARD & SETTINGS (Bookings / Complaints / Wishlist integrated into Settings) -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <!-- Mobile hamburger for settings nav -->
+                <div class="d-md-none mb-3">
+                    <button class="btn btn-outline-dark w-100" onclick="toggleSettingsSidebar()">
+                        <i class="bi bi-list"></i> Settings Menu
+                    </button>
+                </div>
+
+                <div class="row">
+                    <!-- LEFT SIDEBAR (Vertical Menu) - Desktop visible, Mobile overlay -->
+                    <div class="col-md-3 mb-4" id="settingsSidebar">
+                        <div class="card border-0 shadow-sm rounded-3">
+                            <div class="card-body p-2">
+                                <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist">
+                                    <button class="nav-link active text-start py-3 mb-1 fw-bold" id="link-info" onclick="switchSetting('info')">
+                                        <i class="bi bi-person-lines-fill me-2"></i> Info
+                                    </button>
+                                    <button class="nav-link text-start py-3 mb-1 fw-bold" id="link-security" onclick="switchSetting('security')">
+                                        <i class="bi bi-shield-lock-fill me-2"></i> Security
+                                    </button>
+                                    <button class="nav-link text-start py-3 mb-1 fw-bold" id="link-verify" onclick="switchSetting('verify')">
+                                        <i class="bi bi-patch-check-fill me-2"></i> Verify
+                                    </button>
+                                    <hr/>
+                                    <button class="nav-link text-start py-3 mb-1 fw-bold" id="link-bookings" onclick="switchSetting('bookings')">
+                                        <i class="bi bi-calendar-check me-2"></i> My Bookings
+                                    </button>
+                                    <button class="nav-link text-start py-3 mb-1 fw-bold" id="link-complaints" onclick="switchSetting('complaints')">
+                                        <i class="bi bi-exclamation-triangle me-2"></i> Complaints
+                                    </button>
+                                    <button class="nav-link text-start py-3 mb-1 fw-bold" id="link-wishlist" onclick="switchSetting('wishlist')">
+                                        <i class="bi bi-heart me-2"></i> Wishlist
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Mobile overlay backdrop -->
+                    <div id="settingsOverlay" onclick="toggleSettingsSidebar()" style="display: none;"></div>
+
+                    <!-- RIGHT CONTENT AREA (Setting Sections + Dashboard sections merged) -->
+                    <div class="col-md-9">
+                        <!-- PROFILE HEADER CARD -->
+                        <div class="card border-0 shadow-sm rounded-3 mb-4">
+                            <div class="card-body p-4 d-flex align-items-center">
+                                <div class="position-relative me-4">
+                                    <img src="<%= user.profile_pic ? '/uploads/'+user.profile_pic : 'https://via.placeholder.com/150' %>" 
+                                         class="rounded-3 shadow-sm" style="width: 100px; height: 100px; object-fit: cover; border: 3px solid #fff;">
+                                    <button type="button" class="btn btn-gold btn-sm position-absolute bottom-0 end-0 rounded-circle p-2 border-white border-2" onclick="document.getElementById('picInput').click()">
+                                        <i class="bi bi-pencil-fill text-white" style="font-size: 10px;"></i>
+                                    </button>
+                                </div>
+                                <div>
+                                    <h4 class="fw-bold mb-1" style="font-family: 'Cinzel';"><%= user.name %></h4>
+                                    <span class="badge bg-dark mb-2"><%= user.role.toUpperCase() %></span>
+                                    <p class="text-muted small mb-0">Manage your account settings and preferences.</p>
+                                    <div class="d-flex gap-4 mt-3 small text-muted">
+                                        <span><strong><%= bookings.length %></strong> Bookings</span>
+                                        <span><strong>Member since:</strong> <%= new Date(user.created_at || Date.now()).getFullYear() %></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FORM & SETTING SECTIONS (Info / Security / Verify) -->
+                        <form action="/update_profile" method="POST" enctype="multipart/form-data">
+                            <input type="file" name="profile_pic" id="picInput" style="display: none;" onchange="this.form.submit()">
+
+                            <!-- SECTION: INFO -->
+                            <div id="section-info" class="setting-section">
+                                <div class="card border-0 shadow-sm rounded-3 p-4">
+                                    <h5 class="fw-bold text-gold text-uppercase mb-4" style="color: #D4AF37;">Personal Information</h5>
+                                    <div class="row g-4">
+                                        <div class="col-md-6">
+                                            <label class="form-label small text-muted fw-bold">FULL NAME</label>
+                                            <input type="text" name="name" class="form-control bg-light border-0 py-3" value="<%= user.name %>">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small text-muted fw-bold">EMAIL (READ-ONLY)</label>
+                                            <input type="text" class="form-control bg-light border-0 py-3" value="<%= user.email %>" readonly>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small text-muted fw-bold">PHONE</label>
+                                            <input type="text" name="phone" class="form-control bg-light border-0 py-3" value="<%= user.phone %>">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="form-label small text-muted fw-bold">CITY</label>
+                                            <input type="text" name="city" class="form-control bg-light border-0 py-3" value="<%= user.city || '' %>" placeholder="e.g. Faisalabad">
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label small text-muted fw-bold">ABOUT / BIO</label>
+                                            <textarea name="about" class="form-control bg-light border-0" rows="3" placeholder="Tell us about yourself..."><%= user.about %></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="text-end mt-4">
+                                        <button type="button" class="btn btn-light me-2">Cancel</button>
+                                        <button type="submit" class="btn btn-dark px-4">Save Profile</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- SECTION: SECURITY (Password) -->
+                            <div id="section-security" class="setting-section" style="display: none;">
+                                <div class="card border-0 shadow-sm rounded-3 p-4">
+                                    <h5 class="fw-bold text-danger text-uppercase mb-4">Change Password</h5>
+                                    <form action="/change_password" method="POST">
+                                        <div class="mb-3">
+                                            <label class="fw-bold small text-muted">CURRENT PASSWORD</label>
+                                            <input type="password" name="current_pass" class="form-control" required>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="fw-bold small text-muted">NEW PASSWORD</label>
+                                                <input type="password" name="new_pass" class="form-control" required>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="fw-bold small text-muted">CONFIRM PASSWORD</label>
+                                                <input type="password" name="confirm_pass" class="form-control" required>
+                                            </div>
+                                        </div>
+                                        <div class="text-end">
+                                            <button type="submit" class="btn btn-dark">Update Password</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <!-- SECTION: VERIFY (CNIC) -->
+                            <div id="section-verify" class="setting-section" style="display: none;">
+                                <div class="card border-0 shadow-sm rounded-3 p-4">
+                                    <h5 class="fw-bold text-success text-uppercase mb-4">Identity Verification</h5>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label class="form-label small text-muted fw-bold">UPLOAD CNIC (FRONT SIDE)</label>
+                                            <div class="border-2 border-dashed p-5 text-center rounded bg-light">
+                                                <% if(user.is_id_verified) { %>
+                                                    <i class="bi bi-check-circle-fill text-success fs-1"></i>
+                                                    <h5 class="mt-2 text-success">Verified</h5>
+                                                    <p class="small text-muted">Your identity has been verified.</p>
+                                                <% } else { %>
+                                                    <i class="bi bi-cloud-upload text-muted fs-1"></i>
+                                                    <p class="small text-muted mt-2">Drag & drop or click to upload</p>
+                                                    <input type="file" name="cnic_front" class="form-control mt-3">
+                                                    <div class="text-end mt-3">
+                                                        <button type="submit" class="btn btn-success">Submit for Verification</button>
+                                                    </div>
+                                                <% } %>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </form>
+
+                        <!-- SECTION: BOOKINGS (moved into settings) -->
+                        <div id="section-bookings" class="setting-section" style="display: none;">
+                            <div class="card border-0 shadow-sm p-4">
+                                <h5 class="fw-bold mb-3">My Bookings</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle">
+                                        <thead class="table-light"><tr><th>Hostel</th><th>Date</th><th>Status</th><th>Receipt</th></tr></thead>
+                                        <tbody>
+                                            <% bookings.forEach(booking => { %>
+                                            <tr>
+                                                <td class="fw-bold"><%= booking.hostel_name %></td>
+                                                <td><%= new Date(booking.created_at).toLocaleDateString() %></td>
+                                                <td>
+                                                    <span class="badge rounded-pill bg-<%= booking.status == 'Approved' ? 'success' : (booking.status == 'Pending' ? 'warning' : 'danger') %>">
+                                                        <%= booking.status %>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <% if(booking.status == 'Pending' || booking.status == 'Rejected') { %>
+                                                        <a href="/cancel_booking/<%= booking.id %>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to cancel this request?');">
+                                                            <i class="bi bi-trash"></i> Cancel
+                                                        </a>
+                                                    <% } else { %>
+                                                        <span class="text-success small"><i class="bi bi-check-circle"></i> Active</span>
+                                                    <% } %>
+                                                </td>
+                                            </tr>
+                                            <% }) %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SECTION: COMPLAINTS (moved into settings) -->
+                        <div id="section-complaints" class="setting-section" style="display: none;">
+                            <div class="card border-0 shadow-sm p-4">
+                                <h5 class="fw-bold mb-3">Complaints</h5>
+                                <% if(complaints.length > 0) { %>
+                                    <div class="list-group">
+                                        <% complaints.forEach(comp => { %>
+                                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <strong class="text-danger"><%= comp.issue_type %></strong>
+                                                    <small class="text-muted mx-2"><%= new Date(comp.created_at).toLocaleDateString() %></small>
+                                                    <p class="mb-0 small text-secondary"><%= comp.description %></p>
+                                                </div>
+                                                <span class="badge bg-<%= comp.status == 'Resolved' ? 'success' : 'secondary' %>"><%= comp.status %></span>
+                                            </div>
+                                        <% }) %>
+                                    </div>
+                                <% } else { %>
+                                    <p class="text-muted text-center py-3">No complaints reported.</p>
+                                <% } %>
+                            </div>
+                        </div>
+
+                        <!-- SECTION: WISHLIST (moved into settings) -->
+                        <div id="section-wishlist" class="setting-section" style="display: none;">
+                            <div class="card border-0 shadow-sm p-4">
+                                <h5 class="fw-bold mb-3">Wishlist</h5>
+                                <div class="row g-3">
+                                    <% wishlist.forEach(item => { %>
+                                        <div class="col-md-4 col-sm-6">
+                                            <div class="card h-100 border shadow-sm">
+                                                <img src="/uploads/<%= item.image || 'default.jpg' %>" class="card-img-top" style="height: 150px; object-fit: cover;">
+                                                <div class="card-body">
+                                                    <h6 class="fw-bold"><%= item.name %></h6>
+                                                    <a href="/details/<%= item.id %>" class="btn btn-sm btn-outline-dark w-100 mt-2">View</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <% }) %>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+<!-- Add this Script at the bottom of student_dashboard.ejs -->
+<script>
+    function switchSetting(sectionName) {
+        // 1. Hide all sections
+        document.querySelectorAll('.setting-section').forEach(el => el.style.display = 'none');
+        
+        // 2. Remove active class from all links
+        document.querySelectorAll('.nav-pills .nav-link').forEach(el => {
+            el.classList.remove('active', 'bg-light', 'text-dark');
+            el.classList.add('text-start'); // maintain alignment
+        });
+
+        // 3. Show selected section
+        document.getElementById('section-' + sectionName).style.display = 'block';
+
+        // 4. Highlight selected link (Premium Style)
+        const activeLink = document.getElementById('link-' + sectionName);
+        activeLink.classList.add('active');
+        
+        // 5. On mobile, close the sidebar after selection
+        if(window.innerWidth < 768) {
+            toggleSettingsSidebar();
+        }
+    }
+    
+    function openSettings(sectionName){
+        try{
+            switchSetting(sectionName || 'info');
+            const el = document.getElementById('section-' + (sectionName || 'info'));
+            if(el){ el.scrollIntoView({behavior:'smooth', block:'start'}); }
+        }catch(e){ console.error('openSettings error', e); }
+    }
+    
+    function toggleSettingsSidebar() {
+        const sidebar = document.getElementById('settingsSidebar');
+        const overlay = document.getElementById('settingsOverlay');
+        const isVisible = sidebar.classList.contains('settings-sidebar-active');
+        
+        if(isVisible) {
+            sidebar.classList.remove('settings-sidebar-active');
+            overlay.style.display = 'none';
+        } else {
+            sidebar.classList.add('settings-sidebar-active');
+            overlay.style.display = 'block';
+        }
+    }
+    
+    // Add custom CSS for the active tab state and mobile sidebar
+    const style = document.createElement('style');
+    style.innerHTML = `
+        .nav-pills .nav-link { color: #555; transition: 0.3s; }
+        .nav-pills .nav-link:hover { background: #f8f9fa; color: #000; }
+        .nav-pills .nav-link.active { background-color: #D4AF37 !important; color: #fff !important; }
+        
+        /* Mobile sidebar overlay styles */
+        @media (max-width: 767.98px) {
+            #settingsSidebar {
+                position: fixed !important;
+                left: 0 !important;
+                top: 80px !important;
+                width: 280px !important;
+                height: calc(100vh - 80px) !important;
+                background: white !important;
+                transform: translateX(-100%) !important;
+                transition: transform 0.3s ease !important;
+                z-index: 1035 !important;
+                overflow-y: auto !important;
+                padding: 20px 0 !important;
+                margin: 0 !important;
+            }
+            
+            #settingsSidebar.settings-sidebar-active {
+                transform: translateX(0) !important;
+            }
+            
+            #settingsOverlay.active {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                background: rgba(0,0,0,0.4) !important;
+                z-index: 1034 !important;
+                display: block !important;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+</script>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODALS ==================== -->
+
+<!-- 1. COMPLAINT MODAL (The one that wasn't working) -->
+<div class="modal fade" id="complaintModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form action="/submit_complaint" method="POST" class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="bi bi-tools"></i> Report Issue</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted small">Reporting for: <strong id="modalHostelName">Hostel</strong></p>
+                
+                <!-- Hidden Input for ID -->
+                <input type="hidden" name="hostel_id" id="modalHostelId" value="">
+
+                <div class="mb-3">
+                    <label class="fw-bold small">Issue Type</label>
+                    <select name="issue_type" class="form-select" required>
+                        <option value="Electricity">Electricity / Power</option>
+                        <option value="WiFi">Internet / WiFi</option>
+                        <option value="Water">Water / Plumbing</option>
+                        <option value="Cleaning">Cleanliness</option>
+                        <option value="Security">Security</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="fw-bold small">Description</label>
+                    <textarea name="description" class="form-control" rows="3" placeholder="Details..." required></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-danger">Submit Report</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 2. PAYMENT MODAL -->
+<div class="modal fade" id="paymentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form action="/upload_payment" method="POST" enctype="multipart/form-data" class="modal-content">
+            <div class="modal-header bg-dark text-white"><h5 class="modal-title">Upload Payment</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+            <div class="modal-body">
+                <p class="small text-muted">Please upload your transaction screenshot.</p>
+                <% if(bookings && bookings.length > 0) { %>
+                    <input type="hidden" name="booking_id" value="<%= bookings[0].id %>">
+                <% } %>
+                <input type="file" name="proof" class="form-control" required>
+            </div>
+            <div class="modal-footer"><button type="submit" class="btn btn-dark">Upload</button></div>
+        </form>
+    </div>
+</div>
+<!-- RENT PAYMENT MODAL -->
+<div class="modal fade" id="rentModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <form action="/pay_rent" method="POST" enctype="multipart/form-data" class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-gold text-white" style="background: var(--gold);">
+                <h5 class="modal-title fw-bold"><i class="bi bi-cash-stack"></i> Pay Rent</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p class="text-center text-muted mb-4">
+                    Uploading proof for: <strong id="rentMonthDisplay" class="text-dark fs-5 d-block mt-1"></strong>
+                </p>
+                
+                <input type="hidden" name="payment_id" id="rentPaymentId">
+                
+                <div class="mb-3">
+                    <label class="small fw-bold">Upload Screenshot / Receipt</label>
+                    <input type="file" name="proof" class="form-control" required accept="image/*">
+                </div>
+                
+                <div class="alert alert-light border small">
+                    <i class="bi bi-info-circle"></i> Please transfer the rent to the owner's account and upload the screenshot here. The owner will verify it shortly.
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="submit" class="btn btn-dark w-100">Submit Payment</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Script to open the modal with correct ID
+    function openPayModal(id, month) {
+        document.getElementById('rentPaymentId').value = id;
+        document.getElementById('rentMonthDisplay').innerText = month;
+        new bootstrap.Modal(document.getElementById('rentModal')).show();
+    }
+</script>
+
+<!-- ANNOUNCEMENT MODAL — NEON PREMIUM -->
+<% if (stay && stay.announcement) { %>
+<div class="modal fade" id="announcementModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content neon-modal border-0 shadow-lg">
+
+            <div class="modal-header border-0 py-4 position-relative">
+                <div class="w-100 text-center">
+                    <h4 class="fw-bold mb-0 neon-title">📢 Announcement</h4>
+                </div>
+                <button type="button" class="btn-close btn-close-white position-absolute end-0 me-3" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body px-4 pb-4 pt-0">
+                <div class="neon-box p-4 rounded-4">
+                    <p class="fs-5 mb-0 text-light"><%= stay.announcement %></p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+/* Neon Card Background */
+.neon-modal {
+    background: #0a0a0a;
+    border-radius: 22px;
+    animation: fadeUp 0.45s ease;
+    border: 2px solid rgba(0,255,255,0.4);
+    box-shadow: 0 0 35px rgba(0,255,255,0.3);
+}
+
+/* Neon Text */
+.neon-title {
+    color: #ffe600;
+    text-shadow: 0 0 8px #ffe600, 0 0 15px #ffe100;
+}
+
+/* Neon Inner Box */
+.neon-box {
+    background: rgba(0,255,255,0.08);
+    border: 1px solid rgb(255, 234, 0);
+    box-shadow: 0 0 20px rgb(255, 200, 0);
+    backdrop-filter: blur(8px);
+}
+
+/* Animation */
+@keyframes fadeUp {
+    from { transform: translateY(25px); opacity: 0; }
+    to   { transform: translateY(0); opacity: 1; }
+}
+</style>
+<% } %>
+
+
+<!-- --- IMPORTANT: BOOTSTRAP JS (Required for Modals) --- -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- JAVASCRIPT LOGIC -->
+<script>
+    function openComplaintModal(id, name) {
+        console.log("Opening Complaint Modal for ID:", id, "Name:", name); // Debugging
+        
+        // 1. Set values in hidden input
+        document.getElementById('modalHostelId').value = id;
+        document.getElementById('modalHostelName').innerText = name;
+
+        // 2. Open Modal Manually using Bootstrap
+        var myModal = new bootstrap.Modal(document.getElementById('complaintModal'));
+        myModal.show();
+    }
+</script>
+
+<%- include('partials/footer') %>

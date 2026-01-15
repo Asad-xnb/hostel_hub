@@ -1,0 +1,379 @@
+<%- include('partials/header_sidebar') %>
+
+<style>
+    /* Owner Dashboard Responsive */
+    @media (max-width: 991.98px) {
+        .d-flex.gap-2 { gap: 0.75rem !important; }
+        .btn-sm { padding: 8px 12px; font-size: 0.85rem; }
+        .btn { min-width: auto; }
+    }
+
+    @media (max-width: 767.98px) {
+        .d-flex.gap-2 { gap: 0.5rem !important; flex-wrap: wrap; }
+        .btn-sm { padding: 8px 10px; font-size: 0.8rem; }
+        .btn { min-width: auto; }
+        .card-header { padding: 12px 15px !important; }
+        .card-header h5 { font-size: 1rem; }
+        .text-center h3 { font-size: 1.5rem; }
+    }
+
+    @media (max-width: 575.98px) {
+        .col-6 { padding: 0.5rem; }
+        .card { padding: 12px !important; }
+        .gap-2 { gap: 0.25rem !important; }
+        .btn-sm { padding: 6px 8px; font-size: 0.7rem; }
+        .d-flex.gap-2 { gap: 4px; }
+        .d-flex.gap-2 .btn { flex: 1 1 auto; min-width: 40px; }
+        .card p { font-size: 0.8rem; }
+        .d-flex.align-items-center.gap-2 { flex-wrap: wrap; }
+        .d-flex.align-items-center.gap-2 .btn { min-height: 38px; }
+    }
+</style>
+
+<div class="content-wrapper">
+    <div class="container-fluid" style="min-height: 80vh;">
+        
+        <div class="text-center mb-4">
+            <h2 class="fw-bold mb-1" style="font-family: 'Cinzel';">Owner Dashboard</h2>
+            <p class="text-muted small mb-3">Manage your business overview</p>
+            
+            <div class="d-flex gap-3 flex-wrap justify-content-center">
+                <a href="/payment_settings" class="btn btn-outline-dark shadow-sm d-inline-flex align-items-center justify-content-center gap-2 btn-sm" style="min-width: 130px; padding: 8px 15px;">
+                    <i class="bi bi-wallet2" style="font-size: 1rem;"></i> <span class="d-none d-sm-inline">Payment Method</span>
+                </a>
+                <a href="/owner_complaints" class="btn btn-outline-danger shadow-sm d-inline-flex align-items-center justify-content-center gap-2 btn-sm" style="min-width: 130px; padding: 8px 15px;">
+                    <i class="bi bi-tools" style="font-size: 1rem;"></i> <span class="d-none d-sm-inline">View Complaints</span>
+                </a>
+                <a href="/add_hostel" class="btn btn-gold shadow-sm d-inline-flex align-items-center justify-content-center gap-2 btn-sm" style="min-width: 130px; padding: 8px 15px;">
+                    <i class="bi bi-plus-lg" style="font-size: 1rem;"></i> <span>Add Hostel</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3 col-6">
+                <div class="card border-0 shadow-sm p-3 text-center bg-white h-100">
+                    <h3 class="fw-bold text-primary mb-0"><%= stats.totalViews || 0 %></h3>
+                    <small class="text-muted">Total Views</small>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card border-0 shadow-sm p-3 text-center bg-white h-100">
+                    <h3 class="fw-bold text-warning mb-0"><%= stats.pending || 0 %></h3>
+                    <small class="text-muted">Pending</small>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card border-0 shadow-sm p-3 text-center bg-white h-100">
+                    <h3 class="fw-bold text-success mb-0"><%= stats.approved || 0 %></h3>
+                    <small class="text-muted">Approved</small>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card border-0 shadow-sm p-3 text-center bg-white h-100">
+                    <h3 class="fw-bold text-danger mb-0"><%= stats.rejected || 0 %></h3>
+                    <small class="text-muted">Rejected</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0 p-4 mb-5">
+            <h5 class="fw-bold"><i class="bi bi-graph-up text-gold" style="color: #D4AF37;"></i> Booking Performance</h5>
+            <div style="height: auto; min-height: 250px; width: 100%; position: relative;">
+                <canvas id="bookingChart"></canvas>
+            </div>
+        </div>
+
+        
+
+        <!-- FILTERS SECTION -->
+        <div class="card border-0 shadow-sm p-3 mb-4 bg-light">
+            <form action="/owner_dashboard" method="GET" class="row g-3 align-items-end">
+                <div class="col-12 col-md-3">
+                    <label class="form-label small fw-bold text-muted">Filter by Hostel</label>
+                    <select name="hostel_id" class="form-select form-select-sm">
+                        <option value="">All Properties</option>
+                        <% my_hostels.forEach(h => { %>
+                            <option value="<%= h.id %>" <%= query.hostel_id == h.id ? 'selected' : '' %>><%= h.name %></option>
+                        <% }) %>
+                    </select>
+                </div>
+                <div class="col-12 col-md-3">
+                    <label class="form-label small fw-bold text-muted">Filter by Date</label>
+                    <input type="date" name="date" class="form-control form-control-sm" value="<%= query.date || '' %>">
+                </div>
+                <div class="col-12 col-md-3">
+                    <label class="form-label small fw-bold text-muted">Booking Status</label>
+                    <select name="status" class="form-select form-select-sm">
+                        <option value="">All Statuses</option>
+                        <option value="Pending" <%= query.status == 'Pending' ? 'selected' : '' %>>Pending</option>
+                        <option value="Approved" <%= query.status == 'Approved' ? 'selected' : '' %>>Approved</option>
+                        <option value="Rejected" <%= query.status == 'Rejected' ? 'selected' : '' %>>Rejected</option>
+                    </select>
+                </div>
+                <div class="col-12 col-md-3">
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-sm btn-primary flex-grow-1"><i class="bi bi-funnel"></i> Apply</button>
+                        <a href="/owner_dashboard" class="btn btn-sm btn-outline-secondary"><i class="bi bi-x-lg"></i></a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Rent Payments Section -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="d-flex align-items-center mb-3">
+                    <span class="bg-success rounded-pill me-3" style="width: 5px; height: 30px;"></span>
+                    <h5 class="fw-bold mb-0 text-dark">Pending Rent Verifications</h5>
+                </div>
+
+                <div class="card shadow border-0 rounded-3 overflow-hidden">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light text-secondary small text-uppercase">
+                                <tr>
+                                    <th class="ps-4 py-3">Student & Hostel Details</th>
+                                    <th>Rent Cycle</th>
+                                    <th>Amount</th>
+                                    <th>Submission Date</th>
+                                    <th>Proof</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (rent_requests && rent_requests.length > 0) { 
+                                    rent_requests.forEach(rent => { 
+                                        const dateObj = new Date(rent.created_at);
+                                        const dateStr = dateObj.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+                                %>
+                                    <tr>
+                                        <td class="ps-4">
+                                            <div class="d-flex align-items-center">
+                                                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center text-primary fw-bold" style="width: 40px; height: 40px;">
+                                                    <%= rent.student_name.charAt(0).toUpperCase() %>
+                                                </div>
+                                                <div class="ms-3">
+                                                    <div class="fw-bold text-dark"><%= rent.student_name %></div>
+                                                    <small class="text-muted"><i class="bi bi-building me-1"></i> <%= rent.hostel_name %></small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-light text-dark border"><i class="bi bi-calendar4-week me-1"></i> <%= rent.month_year %></span>
+                                        </td>
+                                        <td class="fw-bold text-success">Rs. <%= rent.amount.toLocaleString() %></td>
+                                        <td class="small text-dark"><%= dateStr %></td>
+                                        <td>
+                                            <a href="/uploads/<%= rent.proof_image %>" target="_blank" class="btn btn-sm btn-outline-dark border-0 bg-light">
+                                                <i class="bi bi-file-earmark-image-fill text-primary fs-5"></i>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <a href="/approve_rent/<%= rent.id %>" class="btn btn-sm btn-success text-white px-3 shadow-sm fw-bold" onclick="return confirm('Confirm payment received?');">
+                                                <i class="bi bi-check2-circle me-1"></i> Verify
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <% }) } else { %>
+                                    <tr>
+                                        <td colspan="6" class="text-center py-5">
+                                            <div class="text-muted opacity-50 mb-2"><i class="bi bi-wallet2 display-4"></i></div>
+                                            <h6 class="fw-bold text-secondary">No pending payments</h6>
+                                        </td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Booking Requests TABS -->
+        <h5 class="fw-bold text-dark mb-3 border-start border-4 border-primary ps-3">Booking Management</h5>
+        
+        <ul class="nav nav-tabs mb-3" id="bookingTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active fw-bold" id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending" type="button" role="tab">
+                    <i class="bi bi-hourglass-split text-warning"></i> Pending Requests
+                    <% if(stats.pending > 0) { %> <span class="badge bg-danger rounded-pill ms-1"><%= stats.pending %></span> <% } %>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-bold" id="approved-tab" data-bs-toggle="tab" data-bs-target="#approved" type="button" role="tab">
+                    <i class="bi bi-check-circle-fill text-success"></i> Approved & History
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="bookingTabsContent">
+            
+            <!-- PENDING TAB -->
+            <div class="tab-pane fade show active" id="pending" role="tabpanel">
+                <div class="card shadow-sm border-0 mb-5">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-4">Student</th>
+                                    <th>Hostel / Room</th>
+                                    <th>Date</th>
+                                    <th>Rent</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% const pendingBookings = bookings.filter(b => b.status === 'Pending'); %>
+                                <% if (pendingBookings.length > 0) { %>
+                                    <% pendingBookings.forEach(row => { %>
+                                        <tr>
+                                            <td class="ps-4">
+                                                <div class="fw-bold"><%= row.student_name %></div>
+                                                <small class="text-muted"><%= row.email %></small>
+                                            </td>
+                                            <td>
+                                                <span class="d-block fw-bold"><%= row.hostel_name %></span>
+                                                <% if(row.room_name) { %>
+                                                    <span class="badge bg-info text-dark"><i class="bi bi-door-open"></i> <%= row.room_name %></span>
+                                                <% } %>
+                                                <% if(row.includes_mess) { %>
+                                                    <span class="badge bg-warning text-dark"><i class="bi bi-egg-fried"></i> Mess</span>
+                                                <% } %>
+                                            </td>
+                                            <td><small><%= new Date(row.created_at).toLocaleDateString() %></small></td>
+                                            <td class="fw-bold text-success">Rs. <%= row.final_rent ? row.final_rent.toLocaleString() : 'N/A' %></td>
+                                            <td>
+                                                <a href="/update_booking/<%= row.booking_id %>/Approved" class="btn btn-sm btn-success" title="Approve"><i class="bi bi-check-lg"></i> Approve</a>
+                                                <a href="/update_booking/<%= row.booking_id %>/Rejected" class="btn btn-sm btn-danger" title="Reject"><i class="bi bi-x-lg"></i> Reject</a>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                <% } else { %>
+                                    <tr><td colspan="5" class="text-center py-4 text-muted">No pending requests found.</td></tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- APPROVED / HISTORY TAB -->
+            <div class="tab-pane fade" id="approved" role="tabpanel">
+                <div class="card shadow-sm border-0 mb-5">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-4">Student</th>
+                                    <th>Hostel / Room</th>
+                                    <th>Booking Date</th>
+                                    <th>Rent Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% const historyBookings = bookings.filter(b => b.status !== 'Pending'); %>
+                                <% if (historyBookings.length > 0) { %>
+                                    <% historyBookings.forEach(row => { %>
+                                        <tr>
+                                            <td class="ps-4">
+                                                <div class="fw-bold"><%= row.student_name %></div>
+                                            </td>
+                                            <td>
+                                                <%= row.hostel_name %>
+                                                <% if(row.room_name) { %> <span class="badge bg-light text-dark border"><%= row.room_name %></span> <% } %>
+                                            </td>
+                                            <td><%= new Date(row.created_at).toLocaleDateString() %></td>
+                                            <td>Rs. <%= row.final_rent ? row.final_rent.toLocaleString() : 'N/A' %></td>
+                                            <td>
+                                                <% if(row.status === 'Approved') { %> 
+                                                    <span class="badge bg-success">Active / Approved</span>
+                                                <% } else { %> 
+                                                    <span class="badge bg-secondary">Rejected</span>
+                                                <% } %>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                <% } else { %>
+                                    <tr><td colspan="5" class="text-center py-4 text-muted">No history found matching filters.</td></tr>
+                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <h5 class="fw-bold text-dark mb-3 border-start border-4 border-warning ps-3">My Properties</h5>
+        <% if (my_hostels.length > 0) { %>
+            <div class="row g-3 mb-5">
+                <% my_hostels.forEach(h => { 
+                    let img = h.image ? '/uploads/'+h.image : 'https://via.placeholder.com/100';
+                %>
+                <div class="col-md-4 col-lg-3">
+                    <div class="card border-0 shadow-sm h-100 position-relative">
+                        <a href="/delete_hostel/<%= h.id %>" 
+                           class="btn btn-danger btn-sm position-absolute top-0 end-0 m-2 rounded-circle shadow" 
+                           style="width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; z-index: 10; padding: 0; line-height: 1;"
+                           onclick="return confirm('⚠️ Are you sure? \n\nThis will delete the Hostel, all Rooms, and all Bookings associated with it. This action cannot be undone.');"
+                           title="Delete Hostel">
+                            <i class="bi bi-trash-fill" style="font-size: 1.2rem;"></i>
+                        </a>
+                        <div class="d-flex p-2 align-items-center">
+                            <img src="<%= img %>" class="rounded" style="width: 70px; height: 70px; object-fit: cover;">
+                            <div class="ms-3 overflow-hidden">
+                                <h6 class="fw-bold mb-1 text-truncate"><%= h.name %></h6>
+                                <small class="text-muted d-block"><i class="bi bi-geo-alt"></i> <%= h.area %></small>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white border-0 pt-0">
+                            <a href="/add_room/<%= h.id %>" class="btn btn-sm btn-outline-info w-100 mb-2"><i class="bi bi-door-open"></i> Manage Rooms</a>
+                            <a href="/edit_hostel/<%= h.id %>" class="btn btn-sm btn-outline-dark w-100 mb-2">Edit Details</a>
+                            <div class="d-flex gap-2">
+                                <a href="/manage_mess/<%= h.id %>" class="btn btn-sm btn-light border flex-fill text-muted"><i class="bi bi-egg-fried"></i> Menu</a>
+                                <a href="/manage_hostel/<%= h.id %>" class="btn btn-sm btn-light border flex-fill text-danger"><i class="bi bi-megaphone"></i> Alert</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <% }); %>
+            </div>
+        <% } else { %>
+            <div class="alert alert-light border text-center py-4 mb-5">
+                <h5 class="text-muted">You haven't listed any hostels yet.</h5>
+                <a href="/add_hostel" class="btn btn-sm btn-gold mt-2">List Your First Hostel</a>
+            </div>
+        <% } %>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const monthsData = <%- JSON.stringify(locals.months || []) %>;
+    const countsData = <%- JSON.stringify(locals.counts || []) %>;
+
+    if (document.getElementById('bookingChart')) {
+        const ctx = document.getElementById('bookingChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: monthsData.length ? monthsData : ['No Data'],
+                datasets: [{
+                    label: 'Bookings',
+                    data: countsData.length ? countsData : [0],
+                    borderColor: '#D4AF37',
+                    backgroundColor: 'rgba(212, 175, 55, 0.2)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+    }
+</script>
+
+        </div>
+    </div>
+
+<%- include('partials/footer') %>

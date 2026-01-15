@@ -1,0 +1,587 @@
+<%- include('partials/header_sidebar') %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title><%= hostel.name %> - Details</title>
+    <!-- Bootstrap CSS for compatibility with partials -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#D4AF37", // Gold
+                        "primary-dark": "#B5952F", // Darker Gold
+                        "background-light": "#F8FAFC",
+                        "background-dark": "#0F172A",
+                        "surface-light": "#FFFFFF",
+                        "surface-dark": "#1E293B",
+                        "text-light": "#1E293B",
+                        "text-dark": "#F1F5F9",
+                        "border-light": "#E2E8F0",
+                        "border-dark": "#334155",
+                    },
+                    fontFamily: {
+                        heading: ["Cinzel", "serif"],
+                        sans: ["Inter", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.5rem",
+                        'xl': '1rem',
+                        '2xl': '1.5rem',
+                    },
+                },
+            },
+        };
+    </script>
+    <style>
+        /* Custom Styles to match Theme */
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4, h5, h6 { font-family: 'Cinzel', serif; }
+        
+        .custom-scrollbar::-webkit-scrollbar { height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #CBD5E1; border-radius: 20px; }
+        
+        /* Carousel Transitions */
+        .carousel-item { transition: opacity 0.5s ease-in-out; opacity: 0; position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
+        .carousel-item.active { opacity: 1; position: relative; }
+
+        /* Gold Button Style */
+        .btn-gold {
+            background-color: #D4AF37;
+            color: white;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .btn-gold:hover {
+            background-color: #B5952F;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+        }
+        
+        /* Text Gold */
+        .text-gold { color: #D4AF37 !important; }
+        
+        /* Navigation Buttons */
+        .nav-btn-glass {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(0,0,0,0.1);
+            color: #333;
+            transition: all 0.2s;
+        }
+        .nav-btn-glass:hover {
+            background: #D4AF37;
+            color: white;
+            border-color: #D4AF37;
+        }
+        /* Make nav buttons slightly translucent and accessible */
+        .nav-btn-glass { backdrop-filter: blur(6px); }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 antialiased">
+
+<!-- Back Button Wrapper -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <a href="/" class="inline-flex items-center px-4 py-2 bg-white border border-gray-200 rounded-full shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors text-decoration-none">
+        <span class="material-icons-round mr-2 text-lg">arrow_back</span>
+        Back to Search
+    </a>
+</div>
+
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    <!-- LEFT COLUMN -->
+    <div class="lg:col-span-2 space-y-8">
+        
+        <!-- Hero Section (Carousel + Details) -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative group">
+            
+            <!-- Carousel -->
+            <div class="aspect-w-16 aspect-h-9 w-full h-[450px] relative bg-gray-100" id="mainCarousel">
+                <% if(images.length > 0) { %>
+                    <% images.forEach((img, index) => { %>
+                        <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                            <img src="/uploads/<%= img.image_path %>" alt="Hostel Image" class="w-full h-full object-cover">
+                        </div>
+                    <% }); %>
+                <% } else { %>
+                    <div class="carousel-item active">
+                        <img src="/uploads/<%= hostel.image || 'default.jpg' %>" alt="Default Hostel Image" class="w-full h-full object-cover">
+                    </div>
+                <% } %>
+                
+                <!-- Navigation Arrows -->
+                <% if(images.length > 1) { %>
+                    <button onclick="moveSlide(-1)" aria-label="Previous image" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full nav-btn-glass flex items-center justify-center shadow-lg z-20 opacity-95 transition-all">
+                        <i class="bi bi-chevron-left fs-5"></i>
+                    </button>
+                    <button onclick="moveSlide(1)" aria-label="Next image" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full nav-btn-glass flex items-center justify-center shadow-lg z-20 opacity-95 transition-all">
+                        <i class="bi bi-chevron-right fs-5"></i>
+                    </button>
+                    
+                    <!-- Indicators -->
+                    <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+                        <% for(let i = 0; i < images.length; i++) { %>
+                            <button onclick="goToSlide(<%= i %>)" class="w-2 h-2 rounded-full transition-all duration-300 <%= i === 0 ? 'bg-primary w-6' : 'bg-white/70 hover:bg-white' %> indicator-dot" data-index="<%= i %>"></button>
+                        <% } %>
+                    </div>
+                <% } %>
+
+                <div class="absolute top-4 left-4">
+                    <span class="px-3 py-1 bg-black/70 text-white text-xs font-bold rounded-md backdrop-blur-sm uppercase tracking-wider">Hostel View</span>
+                </div>
+            </div>
+
+            <!-- Details Content -->
+            <div class="p-6 sm:p-8">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900 tracking-tight mb-2"><%= hostel.name %></h1>
+                        <div class="flex items-center text-gray-500 text-sm">
+                            <span class="material-icons-round text-red-500 mr-1 text-lg">location_on</span>
+                            <span class="mr-3 font-medium text-gray-700"><%= hostel.area %></span>
+                            <span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wide border border-gray-200"><%= hostel.category %></span>
+                            <% if(hostel.is_verified) { %>
+                                <span class="ml-2 flex items-center text-blue-700 bg-blue-50 px-2 py-0.5 rounded text-xs font-bold border border-blue-100">
+                                    <span class="material-icons-round text-sm mr-1">verified</span> Verified
+                                </span>
+                            <% } %>
+                        </div>
+                    </div>
+                    
+                    <!-- Facilities Badges -->
+                    <div class="flex flex-wrap gap-2 mt-4 sm:mt-0">
+                        <% if(hostel.facilities) { 
+                            const facilities = hostel.facilities.split(',');
+                            facilities.slice(0, 3).forEach(f => { %>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-50 text-gray-600 border border-gray-200">
+                                    <i class="bi bi-check2-circle text-green-500 mr-1"></i> <%= f %>
+                                </span>
+                        <% }); } %>
+                    </div>
+                </div>
+
+                <hr class="border-gray-100 mb-6"/>
+                
+                <div class="prose max-w-none">
+                    <h3 class="text-lg font-bold text-gray-900 mb-3">Description</h3>
+                    <p class="text-gray-600 text-sm leading-relaxed">
+                        <%= hostel.description %>
+                    </p>
+                </div>
+
+                <% 
+                    const map_query = encodeURIComponent(hostel.name + " " + hostel.area + " Faisalabad");
+                    const google_maps_link = "https://www.google.com/maps/search/?api=1&query=" + map_query;
+                %>
+                <a href="<%= google_maps_link %>" target="_blank" class="mt-6 flex items-center justify-center w-full px-4 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium text-sm group text-decoration-none">
+                    <span class="material-icons-round mr-2 text-primary group-hover:scale-110 transition-transform">map</span>
+                    View Location on Google Maps App
+                </a>
+            </div>
+        </div>
+
+        <!-- Embedded Map (if exists) -->
+        <% if(hostel.map_embed && hostel.map_embed.trim() !== "") { %>
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden p-1">
+                <div class="aspect-w-16 aspect-h-7 w-full h-[300px] rounded-xl overflow-hidden">
+                    <%- hostel.map_embed %>
+                </div>
+            </div>
+        <% } %>
+
+        <!-- Mess Menu Table -->
+        <% if(mess && mess.length > 0) { %>
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8">
+            <div class="flex items-center mb-6">
+                <span class="p-2 rounded-lg bg-yellow-50 text-primary mr-3 border border-yellow-100">
+                    <span class="material-icons-round">restaurant_menu</span>
+                </span>
+                <h3 class="text-xl font-bold text-gray-900">Weekly Mess Menu</h3>
+            </div>
+            <div class="overflow-x-auto custom-scrollbar pb-2">
+                <table class="min-w-full text-sm text-left">
+                    <thead class="bg-gray-50 text-gray-500 font-semibold border-b border-gray-200">
+                        <tr>
+                            <th class="px-4 py-3 text-center w-1/4 rounded-tl-lg">Day</th>
+                            <th class="px-4 py-3 text-center w-1/4">Breakfast</th>
+                            <th class="px-4 py-3 text-center w-1/4">Lunch</th>
+                            <th class="px-4 py-3 text-center w-1/4 rounded-tr-lg">Dinner</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        <% mess.forEach(m => { %>
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-4 py-3 font-bold text-gray-900 text-center"><%= m.day_name %></td>
+                                <td class="px-4 py-3 text-gray-600 text-center"><%= m.breakfast || '-' %></td>
+                                <td class="px-4 py-3 text-gray-600 text-center"><%= m.lunch || '-' %></td>
+                                <td class="px-4 py-3 text-gray-600 text-center"><%= m.dinner || '-' %></td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <% } %>
+
+        <!-- Available Rooms Section -->
+        <% if (rooms && rooms.length > 0) { %>
+        <div class="space-y-4">
+            <h3 class="text-xl font-bold text-gray-900 flex items-center px-2">
+                <span class="material-icons-round mr-2 text-primary">meeting_room</span> Available Rooms
+            </h3>
+            
+            <% rooms.forEach(room => { %>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col sm:flex-row hover:shadow-md transition-shadow">
+                    <!-- Room Image -->
+                    <div class="sm:w-1/3 h-48 sm:h-auto bg-gray-100 relative overflow-hidden group">
+                        <% if (room.images && room.images.length > 0) { %>
+                            <img src="/uploads/<%= room.images[0].image_path %>" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                        <% } else { %>
+                            <img src="https://via.placeholder.com/300x200" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                        <% } %>
+                    </div>
+                    
+                    <!-- Room Info -->
+                    <div class="p-5 flex-1 flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="text-lg font-bold text-gray-900 font-heading"><%= room.name || 'Room ' + room.id %></h4>
+                                <span class="text-green-600 font-bold text-sm bg-green-50 px-2 py-1 rounded border border-green-100">Rs. <%= Number(room.price_per_seat).toLocaleString() %></span>
+                            </div>
+                            <p class="text-xs text-gray-500 mb-3 line-clamp-2"><%= room.description %></p>
+                            
+                            <% if (typeof room.available !== 'undefined') { %>
+                                <div class="inline-flex items-center px-2 py-1 rounded text-xs font-bold <%= room.available > 0 ? 'bg-blue-50 text-blue-700 border border-blue-100' : 'bg-red-50 text-red-700 border border-red-100' %>">
+                                    <span class="w-1.5 h-1.5 rounded-full <%= room.available > 0 ? 'bg-blue-500' : 'bg-red-500' %> mr-2"></span>
+                                    <%= room.available %> Seats Available
+                                </div>
+                            <% } %>
+                        </div>
+
+                        <div class="flex gap-3 mt-4">
+                            <a href="/room_details/<%= room.id %>" class="flex-1 py-2 text-center border border-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50 transition text-decoration-none">
+                                View Details
+                            </a>
+                            
+                            <form action="/book_seat" method="POST" class="flex-1" onsubmit="setRoomMessValue(<%= room.id %>)">
+                                <input type="hidden" name="room_id" value="<%= room.id %>">
+                                <input type="hidden" name="with_mess" id="hiddenMessInput_<%= room.id %>">
+                                <button type="submit" class="w-full py-2 btn-gold rounded-lg text-sm font-bold shadow-sm <%= room.available <= 0 ? 'opacity-50 cursor-not-allowed' : '' %>" 
+                                    <% if (room.available <= 0) { %> disabled <% } %>>
+                                    Book Seat
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+        <% } %>
+
+        <!-- Reviews Section -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8">
+            <div class="flex items-center mb-6">
+                <span class="p-2 rounded-lg bg-yellow-50 text-primary mr-3 border border-yellow-100">
+                    <span class="material-icons-round">star</span>
+                </span>
+                <h3 class="text-xl font-bold text-gray-900">Reviews</h3>
+            </div>
+            
+            <div class="bg-gray-50 rounded-xl p-6 flex flex-col md:flex-row items-center gap-6 mb-8 border border-gray-100">
+                <div class="flex flex-col items-center justify-center min-w-[120px]">
+                    <span class="text-5xl font-extrabold text-gray-900"><%= rating.avg ? Number(rating.avg).toFixed(1) : '0.0' %></span>
+                    <div class="flex text-yellow-400 my-1">
+                        <% for(let i=1; i<=5; i++) { %>
+                            <span class="material-icons-round text-lg"><%= i <= (rating.avg || 0) ? 'star' : 'star_border' %></span>
+                        <% } %>
+                    </div>
+                    <span class="text-xs text-gray-500 font-medium"><%= rating.count || 0 %> Verified Reviews</span>
+                </div>
+                
+                <div class="h-12 w-px bg-gray-200 hidden md:block"></div>
+                
+                <!-- Review Form Logic -->
+                <div class="flex-1 w-full">
+                    <% if(user && user.role === 'student' && !is_owner) { %>
+                        <form action="/submit_review" method="POST" class="w-full">
+                            <input type="hidden" name="hostel_id" value="<%= hostel.id %>">
+                            <div class="mb-3">
+                                <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Rate Experience</label>
+                                <div class="rating-input flex gap-1 cursor-pointer mt-1" data-rating="0">
+                                    <% for(let i=1; i<=5; i++) { %>
+                                        <span class="material-icons-round text-2xl text-gray-300 hover:text-yellow-400 rating-star transition" data-value="<%= i %>" onclick="setRating(this)">star</span>
+                                    <% } %>
+                                    <input type="hidden" name="rating" id="reviewRating" value="0" required>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <input name="comment" class="flex-1 rounded-lg border-gray-300 bg-white text-sm focus:ring-primary focus:border-primary shadow-sm" placeholder="Share your experience..." required>
+                                <button type="submit" class="px-4 py-2 bg-gray-900 border border-transparent rounded-lg text-sm font-medium text-white hover:bg-black transition shadow-sm">Submit</button>
+                            </div>
+                        </form>
+                    <% } else if (reviews.length === 0) { %>
+                        <p class="text-gray-500 text-sm italic text-center md:text-left">
+                            No reviews yet. Be the first to leave a review!
+                        </p>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- Existing Reviews List -->
+            <% if(reviews.length > 0) { %>
+                <div class="space-y-4">
+                    <% reviews.forEach(r => { %>
+                        <div class="flex items-start space-x-4 pb-4 border-b border-gray-100 last:border-0 last:pb-0">
+                            <img src="<%= r.profile_pic ? '/uploads/'+r.profile_pic : 'https://via.placeholder.com/40' %>" class="w-10 h-10 rounded-full object-cover ring-2 ring-gray-100">
+                            <div>
+                                <h6 class="text-sm font-bold text-gray-900"><%= r.name %></h6>
+                                <div class="flex text-yellow-400 text-xs my-0.5">
+                                    <% for(let i=1; i<=5; i++) { %>
+                                        <span class="material-icons-round text-[14px]"><%= i <= r.rating ? 'star' : 'star_border' %></span>
+                                    <% } %>
+                                </div>
+                                <p class="text-sm text-gray-600 mt-1"><%= r.comment %></p>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+            <% } %>
+        </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN (Sticky Sidebar) -->
+    <div class="lg:col-span-1">
+        <div class="sticky top-8 space-y-6">
+            
+            <!-- Booking Card -->
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 overflow-hidden relative">
+                <!-- Gold Accent Circle -->
+                <div class="absolute top-0 right-0 w-24 h-24 bg-primary/10 rounded-bl-full -mr-4 -mt-4 pointer-events-none"></div>
+                
+                <div class="text-center mb-6 relative z-10">
+                    <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Monthly Rent</p>
+                    <div class="flex items-center justify-center text-green-700">
+                        <h2 class="text-4xl font-bold font-heading" id="displayPrice">Rs. <%= Number(hostel.price).toLocaleString() %></h2>
+                    </div>
+                </div>
+
+                <% if(hostel.mess_fee > 0) { %>
+                <div class="bg-gray-50 rounded-xl p-4 mb-6 border border-gray-200 transition hover:border-primary/50">
+                    <label class="flex items-start cursor-pointer">
+                        <div class="relative flex items-center h-5 mt-1">
+                            <input class="h-5 w-5 text-primary border-gray-300 rounded focus:ring-primary focus:ring-offset-0" type="checkbox" id="messToggleGeneral" onchange="updatePrice()"/>
+                        </div>
+                        <div class="ml-3 text-sm">
+                            <span class="font-bold text-gray-900 block">Include Mess / Food</span>
+                            <span class="text-gray-500 text-xs block mt-1">+ Rs. <%= Number(hostel.mess_fee).toLocaleString() %> / month</span>
+                        </div>
+                    </label>
+                </div>
+                <% } %>
+
+                <% if (is_owner) { %>
+                    <div class="bg-blue-50 text-blue-800 text-sm font-medium p-3 rounded-lg text-center mb-3 border border-blue-100">
+                        <i class="bi bi-info-circle mr-1"></i> You own this property
+                    </div>
+                    <a href="/owner_dashboard" class="w-full py-3 bg-gray-900 hover:bg-black text-white font-bold rounded-xl shadow-md block text-center text-decoration-none transition">
+                        Dashboard
+                    </a>
+                <% } else { %>
+                    
+                <% if(user) { %>
+                        <form action="/book_hostel" method="POST">
+                            <input type="hidden" name="hostel_id" value="<%= hostel.id %>">
+                            <input type="hidden" name="with_mess" id="hiddenMessInputGeneral">
+                            
+                            <button type="submit" onclick="setGeneralMessValue()" class="w-full py-3.5 px-6 btn-gold font-bold rounded-xl shadow-md transform transition-all active:scale-95 flex items-center justify-center gap-2 mb-3">
+                                <span>Book General Spot</span>
+                                <i class="bi bi-arrow-right"></i>
+                            </button>
+                        </form>
+                        
+                        <a href="/chat/<%= hostel.owner_id %>" class="w-full py-3 border border-gray-300 text-gray-700 font-bold rounded-xl hover:bg-gray-50 hover:text-primary hover:border-primary transition block text-center text-decoration-none">
+                            Chat with Owner
+                        </a>
+                <% } else { %>
+                        <a href="/login" class="w-full py-4 px-6 btn-gold font-bold rounded-xl shadow-md transform transition-all active:scale-95 flex items-center justify-center gap-2 text-decoration-none">
+                            <span>Login to Book</span>
+                            <i class="bi bi-box-arrow-in-right"></i>
+                        </a>
+                    <% } %>
+
+                <% } %>
+                
+                <p class="text-center text-xs text-gray-400 mt-4">
+                    Prices are subject to change. Contact owner for final confirmation.
+                </p>
+            </div>
+
+            <!-- Help Card -->
+            <div class="bg-blue-50 rounded-2xl p-6 border border-blue-100">
+                <div class="flex items-start space-x-4">
+                    <div class="flex-shrink-0">
+                        <span class="material-icons-round text-blue-500 text-2xl">support_agent</span>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-bold text-gray-900">Need help?</h4>
+                        <p class="text-xs text-gray-600 mt-1">Chat directly with the owner to ask specific questions.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</main>
+
+
+
+<!-- Logic Script -->
+<script>
+    const baseRent = <%= hostel.price %>;
+    const messFee = <%= hostel.mess_fee || 0 %>;
+
+    // --- Price Update Functions ---
+    function updatePrice() {
+        const checkbox = document.getElementById('messToggleGeneral');
+        const display = document.getElementById('displayPrice');
+        let total = baseRent;
+
+        if (checkbox && checkbox.checked) {
+            total = baseRent + messFee;
+            // Use the project's gold color class so price turns #D4AF37
+            display.classList.add("text-gold");
+        } else {
+            display.classList.remove("text-gold");
+        }
+        
+        display.innerText = "Rs. " + total.toLocaleString();
+    }
+    
+    function setGeneralMessValue() {
+        const checkbox = document.getElementById('messToggleGeneral');
+        const hiddenInput = document.getElementById('hiddenMessInputGeneral');
+        hiddenInput.value = (checkbox && checkbox.checked) ? 'on' : 'off';
+    }
+    
+    function setRoomMessValue(roomId) {
+        const checkbox = document.getElementById('messToggleGeneral'); 
+        const hiddenInput = document.getElementById(`hiddenMessInput_${roomId}`);
+        hiddenInput.value = (checkbox && checkbox.checked) ? 'on' : 'off';
+    }
+
+    // --- Carousel Logic ---
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('#mainCarousel .carousel-item');
+    const dots = document.querySelectorAll('.indicator-dot');
+    const totalSlides = slides.length;
+    
+    function moveSlide(direction) {
+        goToSlide((currentSlide + direction + totalSlides) % totalSlides);
+    }
+    
+    function goToSlide(index) {
+        // Hide current
+        slides[currentSlide].classList.remove('active');
+        if(dots.length > 0) {
+            dots[currentSlide].classList.remove('bg-primary', 'w-6');
+            dots[currentSlide].classList.add('bg-white/70');
+        }
+
+        currentSlide = index;
+
+        // Show new
+        slides[currentSlide].classList.add('active');
+        if(dots.length > 0) {
+            dots[currentSlide].classList.remove('bg-white/70');
+            dots[currentSlide].classList.add('bg-primary', 'w-6');
+        }
+        
+        resetAutoAdvance();
+    }
+    
+    // Auto-advance carousel every 5 seconds
+    let autoAdvanceTimer;
+    function autoAdvanceCarousel() {
+        if (totalSlides > 1) {
+            autoAdvanceTimer = setInterval(() => {
+                moveSlide(1);
+            }, 5000);
+        }
+    }
+    
+    function resetAutoAdvance() {
+        clearInterval(autoAdvanceTimer);
+        autoAdvanceCarousel();
+    }
+    
+    // Start auto-advance on page load
+    autoAdvanceCarousel();
+
+    // Keyboard navigation: left/right arrows
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowLeft') moveSlide(-1);
+        if (e.key === 'ArrowRight') moveSlide(1);
+    });
+
+    // Touch swipe support for mobile (simple implementation)
+    (function setupTouchSwipe(){
+        let touchStartX = null;
+        const carousel = document.getElementById('mainCarousel');
+        if (!carousel) return;
+
+        carousel.addEventListener('touchstart', function(e){
+            touchStartX = e.changedTouches[0].screenX;
+        }, {passive: true});
+
+        carousel.addEventListener('touchend', function(e){
+            if (touchStartX === null) return;
+            const touchEndX = e.changedTouches[0].screenX;
+            const diff = touchEndX - touchStartX;
+            if (Math.abs(diff) > 40) {
+                if (diff > 0) moveSlide(-1); else moveSlide(1);
+            }
+            touchStartX = null;
+        }, {passive: true});
+    })();
+
+    // --- Review Star Logic ---
+    function setRating(star) {
+        const ratingValue = parseInt(star.getAttribute('data-value'));
+        const container = star.closest('.rating-input');
+        document.getElementById('reviewRating').value = ratingValue;
+        
+        container.querySelectorAll('.rating-star').forEach(s => {
+            const sValue = parseInt(s.getAttribute('data-value'));
+            if (sValue <= ratingValue) {
+                s.innerText = 'star';
+                s.classList.add('text-yellow-400');
+                s.classList.remove('text-gray-300');
+            } else {
+                s.innerText = 'star_border'; 
+                s.classList.remove('text-yellow-400');
+                s.classList.add('text-gray-300');
+            }
+        });
+    }
+</script>
+<%- include('partials/footer') %>
+</body>
+</html>

@@ -1,0 +1,360 @@
+<%- include('partials/header_sidebar') %>
+
+<style>
+:root{
+  --bg: #f6f7f9;
+  --card: #ffffff;
+  --muted: #6b7280;
+  --accent: #D4AF37;
+  --dark: #0f1724;
+  --glass: rgba(255,255,255,0.7);
+  --radius: 12px;
+  --shadow-sm: 0 6px 18px rgba(15,23,36,0.06);
+}
+
+/* Page layout */
+.content-wrapper { padding: 28px 16px; background: var(--bg); min-height: 80vh; }
+.container-xl { max-width: 1100px; margin: 0 auto; }
+
+/* Top compact header */
+.profile-top {
+  display:flex; align-items:center; justify-content:space-between;
+  gap:16px; margin-bottom:20px;
+}
+.profile-top .title {
+  display:flex; flex-direction:column;
+}
+.profile-top h1 { margin:0; font-family:'Cinzel', serif; font-size:1.6rem; color:var(--dark); }
+.profile-top p { margin:0; color:var(--muted); font-size:.95rem; }
+
+/* Layout grid */
+.profile-grid { display:grid; grid-template-columns:92px 1fr; gap:20px; align-items:start; }
+
+/* Left: compact vertical nav */
+.side-nav {
+  background: linear-gradient(180deg,var(--card),#fbfbfb);
+  border-radius: 14px; padding:12px; box-shadow:var(--shadow-sm);
+  display:flex; flex-direction:column; gap:8px; align-items:center;
+  position:sticky; top:20px;
+}
+.side-nav .nav-btn {
+  width:64px; height:64px; border-radius:12px; display:flex; align-items:center; justify-content:center;
+  border:1px solid transparent; background:transparent; color:var(--muted); cursor:pointer;
+  transition: all .18s ease;
+}
+.side-nav .nav-btn i { font-size:1.25rem; }
+.side-nav .nav-btn.active {
+  background: linear-gradient(135deg, rgba(212,175,55,0.12), rgba(212,175,55,0.06));
+  border-color: rgba(212,175,55,0.18);
+  color:var(--dark);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(212,175,55,0.06);
+}
+.side-nav .nav-label { font-size:.75rem; color:var(--muted); margin-top:4px; text-align:center; }
+
+/* Right: main content column */
+.main-col {}
+
+/* Profile card */
+.user-card {
+  display:flex; gap:18px; align-items:center; background:var(--card); padding:18px; border-radius:14px; box-shadow:var(--shadow-sm);
+  margin-bottom:18px;
+}
+.avatar-wrap { position:relative; width:88px; height:88px; flex:0 0 88px; }
+.avatar {
+  width:88px; height:88px; border-radius:14px; object-fit:cover; border:3px solid #fff; box-shadow:0 8px 30px rgba(15,23,36,0.08);
+  transition:transform .28s ease;
+}
+.avatar:hover { transform:scale(1.03); }
+.avatar-edit {
+  position:absolute; right:-6px; bottom:-6px; width:36px; height:36px; border-radius:10px;
+  background:var(--accent); display:flex; align-items:center; justify-content:center; color:#07111a; box-shadow:0 8px 20px rgba(212,175,55,0.18);
+  cursor:pointer; border:2px solid #fff;
+}
+
+/* User meta */
+.user-meta h2 { margin:0; font-size:1.2rem; font-family:'Cinzel', serif; }
+.user-meta .role { display:inline-block; margin-top:6px; padding:6px 10px; border-radius:999px; background:#111; color:var(--accent); font-weight:600; font-size:.78rem; }
+.user-meta p { margin:6px 0 0; color:var(--muted); font-size:.95rem; max-width:620px; }
+
+/* Grid of small stat cards */
+.small-stats { display:flex; gap:12px; margin-top:12px; flex-wrap:wrap; }
+.stat {
+  background:linear-gradient(180deg,#fff,#fbfbfb); padding:10px 14px; border-radius:10px; min-width:120px; box-shadow:0 6px 18px rgba(15,23,36,0.04);
+}
+.stat h4 { margin:0; color:var(--dark); font-size:1.05rem; }
+.stat small { color:var(--muted); display:block; }
+
+/* Form card */
+.form-card { background:var(--card); border-radius:14px; padding:20px; box-shadow:var(--shadow-sm); margin-bottom:16px; }
+.form-row { display:flex; gap:12px; margin-bottom:12px; }
+.form-col { flex:1; display:flex; flex-direction:column; gap:6px; }
+.label { font-size:.75rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:1px; }
+
+/* Inputs */
+.input, textarea { padding:10px 12px; border-radius:10px; border:1px solid #ececec; background:#fff; font-size:.96rem; }
+.input:focus, textarea:focus { outline:none; border-color:rgba(212,175,55,0.8); box-shadow:0 0 0 6px rgba(212,175,55,0.06); }
+textarea { min-height:84px; resize:vertical; }
+
+/* Buttons */
+.btn-primary {
+  background:#111; color:var(--accent); border:2px solid var(--accent); padding:10px 18px; border-radius:999px; font-weight:700; cursor:pointer;
+}
+.btn-ghost { background:transparent; border:1px solid #e9e9e9; padding:9px 14px; border-radius:10px; color:var(--dark); cursor:pointer; }
+
+/* small helper */
+.small-muted { color:var(--muted); font-size:.88rem; }
+
+/* Verification box (compact) */
+.verify-compact {
+  display:flex; gap:12px; align-items:center; padding:12px; border-radius:10px; border:1px dashed #e6e6e6; background:#fff;
+}
+.verify-compact i { font-size:1.6rem; color:var(--accent); }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .profile-grid { grid-template-columns:72px 1fr; }
+  .avatar { width:72px; height:72px; }
+  .user-card { flex-direction:row; gap:12px; }
+}
+@media (max-width: 600px) {
+  .content-wrapper { padding: 16px 12px; }
+  .profile-grid { grid-template-columns:1fr; }
+  .side-nav { flex-direction:row; padding:8px; justify-content:space-around; position:relative; top:auto; overflow-x: auto; }
+  .side-nav .nav-label { display:none; }
+  .side-nav .nav-btn { width: 48px; height: 48px; }
+  .side-nav .nav-btn i { font-size: 1.1rem; }
+  .user-meta p { font-size:.9rem; }
+  .form-row { flex-direction: column; gap: 10px; }
+  .form-col { flex: 1; width: 100%; }
+  .input, textarea { padding: 10px 12px; font-size: 16px; } /* Prevent iOS zoom on input focus */
+  .user-card { flex-direction: column; padding: 14px; gap: 14px; }
+  .avatar-wrap { width: 80px; height: 80px; }
+  .avatar { width: 80px; height: 80px; }
+  .avatar-edit { width: 32px; height: 32px; }
+  .avatar-edit i { font-size: 0.9rem; }
+  .profile-top h1 { font-size: 1.3rem; }
+  .user-meta h2 { font-size: 1.1rem; }
+  .small-stats { gap: 8px; }
+  .stat { padding: 8px 10px; min-width: auto; flex: 1; }
+  .stat h4 { font-size: 0.95rem; }
+  .stat small { font-size: 0.75rem; }
+  .form-card { padding: 16px; margin-bottom: 12px; }
+  .form-card h3 { font-size: 1.1rem; }
+  .verify-compact { flex-direction: column; gap: 10px; }
+  .verify-compact form { width: 100%; display: flex; flex-direction: column; gap: 10px; }
+  .verify-compact input[type="file"] { width: 100%; }
+  .verify-compact button { width: 100%; }
+}
+</style>
+
+<div class="content-wrapper">
+  <div class="container-xl">
+
+    <!-- Top heading -->
+    <div class="profile-top">
+      <div class="title">
+        <h1>Profile</h1>
+        <p class="small-muted">Manage your account, security and verification</p>
+      </div>
+
+      
+    </div>
+
+    <div class="profile-grid">
+
+      <!-- LEFT NAV (icon-first) -->
+      <div class="side-nav" role="tablist" aria-orientation="vertical">
+        <button class="nav-btn active" data-target="info" title="Info"><i class="bi bi-person-circle"></i></button>
+        <div class="nav-label">Info</div>
+
+        <button class="nav-btn" data-target="security" title="Security"><i class="bi bi-shield-lock"></i></button>
+        <div class="nav-label">Security</div>
+
+        <button class="nav-btn" data-target="verification" title="Verification"><i class="bi bi-patch-check"></i></button>
+        <div class="nav-label">Verify</div>
+
+        <button class="nav-btn" data-target="activity" title="Activity"><i class="bi bi-clock-history"></i></button>
+        <div class="nav-label">Activity</div>
+      </div>
+
+      <!-- RIGHT MAIN -->
+      <div class="main-col">
+
+        <!-- USER CARD -->
+        <div class="user-card">
+          <div class="avatar-wrap">
+            <img id="avatarPreview" class="avatar" src="<%= user.profile_pic ? '/uploads/'+user.profile_pic : 'https://via.placeholder.com/300x300?text=Avatar' %>" alt="avatar">
+            <label for="picInput" class="avatar-edit" title="Change photo">
+              <i class="bi bi-pencil-fill"></i>
+            </label>
+            <input id="picInput" name="profile_pic" type="file" accept="image/*" class="d-none" onchange="previewImage(this)">
+          </div>
+
+          <div class="user-meta">
+            <h2><%= user.name %></h2>
+            <div class="role small-muted" style="margin-top:8px;"><span style="background:#111;color:var(--accent);padding:6px 10px;border-radius:999px;font-weight:700;"><%= user.role.toUpperCase() %></span></div>
+            <p class="small-muted" style="margin-top:8px;"><%= user.about || 'Add a short bio to let others know about you.' %></p>
+
+            <div class="small-stats" style="margin-top:10px;">
+              <div class="stat">
+                <h4><%= user.role === 'owner' ? 'Properties' : 'Bookings' %></h4>
+                <small class="small-muted">Active</small>
+              </div>
+              <div class="stat">
+                <h4><%= new Date(user.created_at).getFullYear() %></h4>
+                <small class="small-muted">Member since</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- INFO PANEL (default visible) -->
+        <div id="panel-info" class="form-card">
+
+          <form id="profileForm" action="/update_profile" method="POST" enctype="multipart/form-data">
+
+            <div class="form-row">
+              <div class="form-col">
+                <label class="label">Full name</label>
+                <input name="name" class="input" value="<%= user.name %>" required>
+              </div>
+              <div class="form-col">
+                <label class="label">Email (read-only)</label>
+                <input class="input" value="<%= user.email %>" readonly>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-col">
+                <label class="label">Phone</label>
+                <input name="phone" class="input" value="<%= user.phone || '' %>">
+              </div>
+              <div class="form-col">
+                <label class="label">City</label>
+                <input class="input" value="Faisalabad" readonly>
+              </div>
+            </div>
+
+            <div style="margin-bottom:12px;">
+              <label class="label">About / Bio</label>
+              <textarea name="about" class="input"><%= user.about || '' %></textarea>
+            </div>
+
+            <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:8px;">
+              <button type="button" class="btn-ghost" onclick="resetForm()">Cancel</button>
+              <button type="submit" class="btn-primary">Save profile</button>
+            </div>
+
+          </form>
+        </div>
+
+        <!-- SECURITY PANEL -->
+        <div id="panel-security" class="form-card" style="display:none;">
+          <h3 style="margin-top:0; margin-bottom:10px; font-family:'Cinzel';">Change password</h3>
+          <form action="/change_password" method="POST">
+            <div style="margin-bottom:10px;">
+              <label class="label">Current password</label>
+              <input name="current_pass" type="password" class="input" required>
+            </div>
+            <div class="form-row">
+              <div class="form-col">
+                <label class="label">New password</label>
+                <input name="new_pass" type="password" class="input" required>
+              </div>
+              <div class="form-col">
+                <label class="label">Confirm password</label>
+                <input name="confirm_pass" type="password" class="input" required>
+              </div>
+            </div>
+            <div style="display:flex; gap:10px; justify-content:flex-end; margin-top:12px;">
+              <button type="submit" class="btn-primary">Update password</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- VERIFICATION PANEL -->
+        <div id="panel-verification" class="form-card" style="display:none;">
+          <h3 style="margin-top:0; font-family:'Cinzel'; margin-bottom:6px;">Identity verification</h3>
+
+          <% if (user.is_id_verified) { %>
+            <div class="verify-compact">
+              <i class="bi bi-shield-check"></i>
+              <div>
+                <strong style="display:block;color:var(--dark);">Verified</strong>
+                <small class="small-muted">You completed identity verification.</small>
+              </div>
+            </div>
+          <% } else { %>
+            <div class="verify-compact" style="justify-content:space-between;">
+              <div style="display:flex; align-items:center; gap:12px;">
+                <i class="bi bi-person-badge"></i>
+                <div>
+                  <strong>Not verified</strong>
+                  <div class="small-muted">Upload CNIC / ID to request verification.</div>
+                </div>
+              </div>
+
+              <form action="/upload_cnic" method="POST" enctype="multipart/form-data" style="margin:0;">
+                <input type="file" name="cnic" accept="image/*" required style="display:inline-block;">
+                <button type="submit" class="btn-primary" style="margin-left:10px;">Upload</button>
+              </form>
+            </div>
+          <% } %>
+        </div>
+
+        <!-- ACTIVITY / LOGS PANEL -->
+        <div id="panel-activity" class="form-card" style="display:none;">
+          <h3 style="margin-top:0; font-family:'Cinzel'; margin-bottom:12px;">Recent activity</h3>
+          <div class="small-muted">Recent logins, profile changes and bookings will appear here.</div>
+
+          <ul style="margin-top:12px; padding-left:18px;">
+            <li class="small-muted">No recent activity available.</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Preview image
+  function previewImage(input){
+    if(input.files && input.files[0]){
+      const reader = new FileReader();
+      reader.onload = e => document.getElementById('avatarPreview').src = e.target.result;
+      reader.readAsDataURL(input.files[0]);
+      // attach file to form when submitting - the input is already present (#picInput)
+    }
+  }
+
+  // Nav switching logic
+  const navBtns = document.querySelectorAll('.side-nav .nav-btn');
+  const panels = {
+    info: document.getElementById('panel-info'),
+    security: document.getElementById('panel-security'),
+    verification: document.getElementById('panel-verification'),
+    activity: document.getElementById('panel-activity')
+  };
+
+  navBtns.forEach(btn=>{
+    btn.addEventListener('click', () => {
+      navBtns.forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      const target = btn.dataset.target;
+      // hide all
+      Object.values(panels).forEach(p=> p.style.display = 'none');
+      // show selected
+      if(panels[target]) panels[target].style.display = 'block';
+    });
+  });
+
+  // helper: reset form
+  function resetForm(){
+    document.getElementById('profileForm').reset();
+  }
+</script>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,143 @@
+<%- include('partials/header_sidebar') %>
+
+<!-- WhatsApp Style CSS -->
+<style>
+    body { overflow: auto; background-color: #d1d7db; }
+    
+    .chat-wrapper {
+        height: calc(100vh - 80px);
+        display: flex;
+        flex-direction: column;
+        max-width: 100%;
+        background-color: #efeae2;
+        background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
+        background-repeat: repeat;
+    }
+
+    /* Header */
+    .wa-header {
+        background-color: #f0f2f5;
+        padding: 10px 16px;
+        display: flex; align-items: center;
+        border-left: 1px solid #d1d7db;
+        flex-wrap: wrap;
+    }
+    .wa-header img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 10px; }
+    .wa-back-btn { color: #54656f; font-size: 20px; margin-right: 15px; }
+
+    /* Chat Box */
+    #chatBox {
+        flex: 1; overflow-y: auto; padding: 20px 5%;
+        display: flex; flex-direction: column; gap: 5px;
+        padding-bottom: 110px; /* leave space for sticky footer */
+    }
+
+    /* Bubbles */
+    .msg { max-width: 65%; padding: 6px 10px; border-radius: 8px; font-size: 14px; position: relative; word-wrap: break-word; margin-bottom: 2px; box-shadow: 0 1px 1px rgba(0,0,0,0.1); }
+    .msg.sent { background: #d9fdd3; align-self: flex-end; }
+    .msg.received { background: #fff; align-self: flex-start; }
+
+    /* Input Area */
+    .wa-footer {
+        background-color: #f0f2f5; padding: 10px 16px;
+        display: flex; align-items: center; gap: 10px;
+        position: sticky; bottom: 0; z-index: 20; box-shadow: 0 -2px 6px rgba(0,0,0,0.05);
+    }
+    .wa-input {
+        flex: 1; padding: 10px 15px; border-radius: 8px; border: none; outline: none;
+    }
+    .wa-send-btn {
+        color: #54656f; font-size: 24px; border: none; background: none; cursor: pointer;
+    }
+    
+    /* Mobile responsiveness */
+    @media (max-width: 575.98px) {
+        .chat-wrapper { height: calc(100vh - 70px); }
+        .wa-header { padding: 8px 12px; gap: 8px; }
+        .wa-header img { width: 36px; height: 36px; margin-right: 8px; }
+        .wa-back-btn { font-size: 18px; margin-right: 10px; }
+        .wa-header h6, .wa-header small { font-size: 0.9rem; }
+        #chatBox { padding: 15px 3%; padding-bottom: 100px; gap: 3px; }
+        .msg { max-width: 80%; font-size: 13px; padding: 5px 8px; }
+        .wa-footer { padding: 8px 12px; gap: 8px; }
+        .wa-input { padding: 8px 12px; font-size: 14px; }
+        .wa-send-btn { font-size: 20px; }
+    }
+</style>
+
+<div class="chat-wrapper">
+    
+    <!-- Header -->
+    <div class="wa-header">
+        <a href="/chat_list" class="wa-back-btn"><i class="bi bi-arrow-left"></i></a>
+        
+        <img src="<%= receiver.profile_pic ? '/uploads/'+receiver.profile_pic : 'https://via.placeholder.com/50' %>">
+        
+        <div>
+            <h6 class="m-0 text-dark fw-bold"><%= receiver.name %></h6>
+            <small class="text-muted"><%= receiver.role.toUpperCase() %></small>
+        </div>
+    </div>
+
+    <!-- Chat Area -->
+    <div id="chatBox">
+        <!-- Messages load here -->
+    </div>
+
+    <!-- Footer -->
+    <div class="wa-footer">
+        <input type="text" id="msgInput" class="wa-input" placeholder="Type a message" autocomplete="off">
+        <button class="wa-send-btn" onclick="sendMessage()"><i class="bi bi-send-fill"></i></button>
+    </div>
+
+</div>
+
+<script>
+    const myId = <%= user.id %>;
+    const receiverId = <%= receiver.id %>;
+    const chatBox = document.getElementById('chatBox');
+
+    function loadMessages() {
+        fetch('/api_chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'fetch', receiver_id: receiverId })
+        })
+        .then(res => res.json())
+        .then(data => {
+            let html = "";
+            data.forEach(msg => {
+                const cls = (msg.sender_id === myId) ? 'sent' : 'received';
+                html += `<div class="msg ${cls}">${msg.message}</div>`;
+            });
+            
+            if(chatBox.innerHTML !== html && !document.getElementById('msgInput').matches(':focus')) {
+               // Only update if changed (simple check)
+            }
+            chatBox.innerHTML = html;
+        });
+    }
+
+    function sendMessage() {
+        const input = document.getElementById('msgInput');
+        const msg = input.value.trim();
+        if(!msg) return;
+
+        fetch('/api_chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'send', receiver_id: receiverId, message: msg })
+        }).then(() => {
+            input.value = '';
+            loadMessages();
+            setTimeout(() => chatBox.scrollTop = chatBox.scrollHeight, 100);
+        });
+    }
+
+    setInterval(loadMessages, 1000); // Live Poll
+    loadMessages();
+
+    document.getElementById('msgInput').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') sendMessage();
+    });
+</script>

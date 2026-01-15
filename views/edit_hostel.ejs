@@ -1,0 +1,70 @@
+<%- include('partials/header_sidebar') %>
+
+<div class="content-wrapper">
+    <div class="container" style="max-width: 900px;">
+        <h2 class="fw-bold mb-4" style="font-family: 'Cinzel';">Edit Hostel</h2>
+        
+        <form action="/edit_hostel/<%= hostel.id %>" method="POST" enctype="multipart/form-data" class="card p-5 shadow-sm border-0">
+            <div class="mb-3">
+                <label class="fw-bold">Name</label>
+                <input type="text" name="name" class="form-control" value="<%= hostel.name %>" required>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="fw-bold">Category</label>
+                    <select name="category" class="form-select">
+                        <option <%= hostel.category == 'Boys' ? 'selected' : '' %>>Boys</option>
+                        <option <%= hostel.category == 'Girls' ? 'selected' : '' %>>Girls</option>
+                        <option <%= hostel.category == 'Family' ? 'selected' : '' %>>Family</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="fw-bold">Area</label>
+                    <input type="text" name="area" class="form-control" value="<%= hostel.area %>" required>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="fw-bold">Price</label>
+                <input type="number" name="price" class="form-control" value="<%= hostel.price %>" required>
+            </div>
+            
+            <div class="mb-3 p-3 bg-light rounded">
+                <label class="fw-bold mb-2">Facilities:</label><br>
+                <div class="btn-group flex-wrap gap-2">
+                    <% 
+                        const myFacs = hostel.facilities ? hostel.facilities.split(',') : [];
+                        const allFacs = ['WiFi', 'Mess', 'Laundry', 'Generator', 'CCTV', 'Parking'];
+                    %>
+                    <% allFacs.forEach(f => { %>
+                        <input type="checkbox" class="btn-check" name="facilities" value="<%= f %>" id="e_<%= f %>" <%= myFacs.includes(f) ? 'checked' : '' %>>
+                        <label class="btn btn-outline-dark rounded-pill px-3" for="e_<%= f %>"><%= f %></label>
+                    <% }); %>
+                </div>
+            </div>
+
+            <div class="mb-3"><label class="fw-bold">Description</label><textarea name="desc" class="form-control" rows="4"><%= hostel.description %></textarea></div>
+            <div class="mb-3"><label class="fw-bold text-danger">Google Maps Code</label><textarea name="map_embed" class="form-control" rows="3"><%= hostel.map_embed %></textarea></div>
+
+            <div class="mb-4 border p-3 rounded">
+                <label class="fw-bold text-primary mb-2">Photos</label>
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    <% images.forEach(function(img) { %>
+                        <div class="position-relative">
+                            <img src="/uploads/<%= img.image_path %>" style="width:80px;height:80px;object-fit:cover;" class="rounded">
+                            <!-- UPDATED DELETE BUTTON -->
+<a href="/delete_image/<%= img.id %>?hostel_id=<%= hostel.id %>" 
+   class="btn btn-danger btn-sm position-absolute top-0 end-0 py-0 px-1" 
+   onclick="return confirm('Delete this photo?')">×</a>
+                        </div>
+                    <% }); %>
+                </div>
+                <input type="file" name="images" class="form-control" multiple>
+            </div>
+
+            <button type="submit" class="btn btn-gold w-100 py-3 fw-bold">Update Details</button>
+        </form>
+    </div>
+</div>
+<%- include('partials/footer') %>
